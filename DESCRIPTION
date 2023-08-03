@@ -24,3 +24,5 @@ Imports:
   smoothr,
   sp,
   utils
+Suggests: 
+    covr

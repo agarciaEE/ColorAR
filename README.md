@@ -9,6 +9,8 @@
 status](https://travis-ci.com/agarciaEE/ColorAR.svg?branch=main)](https://travis-ci.com/agarciaEE/ColorAR)
 [![AppVeyor build
 status](https://ci.appveyor.com/api/projects/status/github/agarciaEE/ColorAR?branch=main&svg=true)](https://ci.appveyor.com/project/agarciaEE/ColorAR)
+[![Codecov test
+coverage](https://codecov.io/gh/agarciaEE/ColorAR/branch/main/graph/badge.svg)](https://app.codecov.io/gh/agarciaEE/ColorAR?branch=main)
 <!-- badges: end -->
 
 The goal of ColorAR is to …
