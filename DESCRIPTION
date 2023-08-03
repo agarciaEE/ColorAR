@@ -1,0 +1,26 @@
+Package: ColorAR
+Type: Package
+Title: Color Analysis
+Version: 0.1.0
+Author: Alberto Garcia <alberto.garciajimenez@unil.ch>
+Maintainer: Alberto Garcia <alberto.garciajimenez@unil.ch>
+Description: Provides functions for running color analyses.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.2.3
+Imports:
+  scales,
+  jpeg,
+  raster,
+  DescTools,
+  ape,
+  phytools,
+  viridis,
+  Morpho,
+  RColorBrewer,
+  patternize,
+  shape,
+  smoothr,
+  sp,
+  utils
