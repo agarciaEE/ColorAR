@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 # ColorAR
 
 <!-- badges: start -->
+[![Travis build status](https://travis-ci.com/agarciaEE/ColorAR.svg?branch=main)](https://travis-ci.com/agarciaEE/ColorAR)
 <!-- badges: end -->
 
 The goal of ColorAR is to ...

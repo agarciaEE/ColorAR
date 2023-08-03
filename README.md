@@ -4,6 +4,9 @@
 # ColorAR
 
 <!-- badges: start -->
+
+[![Travis build
+status](https://travis-ci.com/agarciaEE/ColorAR.svg?branch=main)](https://travis-ci.com/agarciaEE/ColorAR)
 <!-- badges: end -->
 
 The goal of ColorAR is to …
@@ -22,38 +25,38 @@ This is a basic example which shows you how to solve a common problem:
 
 ``` r
 library(ColorAR)
-#> Warning: remplacement de l'importation précédente 'ape::zoom' par
-#> 'raster::zoom' lors du chargement de 'ColorAR'
-#> Warning: remplacement de l'importation précédente 'ape::rotate' par
-#> 'raster::rotate' lors du chargement de 'ColorAR'
-#> Warning: remplacement de l'importation précédente 'DescTools::Range' par
-#> 'scales::Range' lors du chargement de 'ColorAR'
-#> Warning: remplacement de l'importation précédente 'phytools::rescale' par
-#> 'scales::rescale' lors du chargement de 'ColorAR'
-#> Warning: remplacement de l'importation précédente 'raster::density' par
-#> 'stats::density' lors du chargement de 'ColorAR'
-#> Warning: remplacement de l'importation précédente 'raster::weighted.mean' par
-#> 'stats::weighted.mean' lors du chargement de 'ColorAR'
-#> Warning: remplacement de l'importation précédente 'raster::predict' par
-#> 'stats::predict' lors du chargement de 'ColorAR'
-#> Warning: remplacement de l'importation précédente 'raster::aggregate' par
-#> 'stats::aggregate' lors du chargement de 'ColorAR'
-#> Warning: remplacement de l'importation précédente 'raster::quantile' par
-#> 'stats::quantile' lors du chargement de 'ColorAR'
-#> Warning: remplacement de l'importation précédente 'raster::update' par
-#> 'stats::update' lors du chargement de 'ColorAR'
-#> Warning: remplacement de l'importation précédente 'smoothr::smooth' par
-#> 'stats::smooth' lors du chargement de 'ColorAR'
-#> Warning: remplacement de l'importation précédente 'raster::tail' par
-#> 'utils::tail' lors du chargement de 'ColorAR'
-#> Warning: remplacement de l'importation précédente 'raster::stack' par
-#> 'utils::stack' lors du chargement de 'ColorAR'
-#> Warning: remplacement de l'importation précédente 'raster::unstack' par
-#> 'utils::unstack' lors du chargement de 'ColorAR'
-#> Warning: remplacement de l'importation précédente 'raster::head' par
-#> 'utils::head' lors du chargement de 'ColorAR'
-#> Warning: remplacement de l'importation précédente 'scales::viridis_pal' par
-#> 'viridis::viridis_pal' lors du chargement de 'ColorAR'
+#> Warning: replacing previous import 'ape::zoom' by 'raster::zoom' when loading
+#> 'ColorAR'
+#> Warning: replacing previous import 'ape::rotate' by 'raster::rotate' when
+#> loading 'ColorAR'
+#> Warning: replacing previous import 'DescTools::Range' by 'scales::Range' when
+#> loading 'ColorAR'
+#> Warning: replacing previous import 'phytools::rescale' by 'scales::rescale'
+#> when loading 'ColorAR'
+#> Warning: replacing previous import 'raster::density' by 'stats::density' when
+#> loading 'ColorAR'
+#> Warning: replacing previous import 'raster::weighted.mean' by
+#> 'stats::weighted.mean' when loading 'ColorAR'
+#> Warning: replacing previous import 'raster::predict' by 'stats::predict' when
+#> loading 'ColorAR'
+#> Warning: replacing previous import 'raster::aggregate' by 'stats::aggregate'
+#> when loading 'ColorAR'
+#> Warning: replacing previous import 'raster::quantile' by 'stats::quantile' when
+#> loading 'ColorAR'
+#> Warning: replacing previous import 'raster::update' by 'stats::update' when
+#> loading 'ColorAR'
+#> Warning: replacing previous import 'smoothr::smooth' by 'stats::smooth' when
+#> loading 'ColorAR'
+#> Warning: replacing previous import 'raster::tail' by 'utils::tail' when loading
+#> 'ColorAR'
+#> Warning: replacing previous import 'raster::stack' by 'utils::stack' when
+#> loading 'ColorAR'
+#> Warning: replacing previous import 'raster::unstack' by 'utils::unstack' when
+#> loading 'ColorAR'
+#> Warning: replacing previous import 'raster::head' by 'utils::head' when loading
+#> 'ColorAR'
+#> Warning: replacing previous import 'scales::viridis_pal' by
+#> 'viridis::viridis_pal' when loading 'ColorAR'
 ## basic example code
 ```
 
