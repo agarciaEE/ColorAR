@@ -7,6 +7,8 @@
 
 [![Travis build
 status](https://travis-ci.com/agarciaEE/ColorAR.svg?branch=main)](https://travis-ci.com/agarciaEE/ColorAR)
+[![AppVeyor build
+status](https://ci.appveyor.com/api/projects/status/github/agarciaEE/ColorAR?branch=main&svg=true)](https://ci.appveyor.com/project/agarciaEE/ColorAR)
 <!-- badges: end -->
 
 The goal of ColorAR is to …
