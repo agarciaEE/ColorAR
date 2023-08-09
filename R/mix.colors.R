@@ -3,9 +3,10 @@
 #' @description Mix multiple colours into one.
 #' @param cols Vector of colors.
 #'
-#' @return The output from \code{\link{print}}
+#' @return The output from \code{\link{mix.colors}}
 #' @export
-#' @import DescTools viridis
+#' @importFrom DescTools MixColor
+#' @importFrom viridis viridis
 #'
 #' @examples
 #' mix.colors(rainbow(9))

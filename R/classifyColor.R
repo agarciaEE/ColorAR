@@ -3,7 +3,7 @@
 #' @description Image color classification into color categories or classes.
 #'
 #' @param image RGB raster image
-#' @param RGB n rows by 3 columns data.frame with target colors to classify. each column must be R, G and B color values, whereas numer of rows will be number of target colors. Default is NULL.
+#' @param RGB n rows by 3 columns data.frame with target colors to classify. each column must be R, G and B color values, whereas number of rows will be number of target colors. Default is NULL.
 #' @param colOffset  n target colors vector of numeric values between 0 and 1. Color offset threshold to assign the target color. Default = NULL. If NULL, bg.offset will be estimated
 #' @param resampleFactor Integer for downsampling used by redRes. Default = NULL
 #' @param crop Logical whether to crop image
@@ -17,15 +17,18 @@
 #' @param bg.offset Numeric value between 0 and 1. If NULL, bg.offset will be estimated. color offset threshold to remove background color. Default NULL
 #' @param plot Wheather plot classyfied image or not. Default FALSE
 #'
-#' @return The output from \code{\link{print}}
+#' @return The output from \code{\link{classifyColor}}
 #' @export
-#' @import smoothr sp raster Morpho patternize
+#' @importFrom raster plotRGB as.array raster extent stack
+#' @importFrom grDevices rgb
 #' @examples
-#' tree <- ape::rtree(26, tip.label = letters[1:26])
-#' X <- data.frame(trait1 = runif(26, -10, 10), trait2 = runif(26, -25, 25))
-#' plotPhylomorphospace(tree, X)
+#' RGB = data.frame(red = c(255, 255, 0), green = c(255, 165, 0), blue = c(255, 0, 0), row.names = c("white", "orange", "black"))
+#' imgClass <- classifyColor(imgTransList[[1]], RGB = RGB, allow.admixture = TRUE, output = "both")
+#' plot(imgClass$class)
 #' \dontrun{
-#' plotPhylomorphospace(tree, X, palette = rainbow(6), col.branches = T)
+#' RGB = data.frame(red = c(255, 255, 0), green = c(255, 165, 0), blue = c(255, 0, 0), row.names = c("white", "orange", "black"))
+#' imgClass <- classifyColor(imgTransList[[2]], RGB = RGB, allow.admixture = TRUE, output = "both")
+#' raster::plotRGB(imgClass$RGB)
 #' }
 classifyColor <-  function(image, RGB = NULL, colOffset = NULL,  resampleFactor = NULL,
                            crop = F,  cropOffset = c(0, 0, 0, 0),  focal = F, sigma = 3,
@@ -44,7 +47,7 @@ classifyColor <-  function(image, RGB = NULL, colOffset = NULL,  resampleFactor 
     image <- removebg(image, bgcol = bgcol, bg.offset = bg.offset, plot = plot)
   }
   if (is.null(RGB)){
-    plotRGB(image)
+    raster::plotRGB(image)
     message("Select the focal colours in image ", name, ", and press [esc] to continue.")
     reference <- as.data.frame(locator(type = "p", col = "blue"))
     kcols <- nrow(reference)
@@ -62,7 +65,7 @@ classifyColor <-  function(image, RGB = NULL, colOffset = NULL,  resampleFactor 
   }
   if (is.null(colOffset)){
     message("Computing colors' offsets...")
-    colOffset <-apply(RGB, 1, function(x) colOffset(image, x))
+    colOffset <- apply(RGB, 1, function(x) colOffset(image, x))
     message("Selected offsets: ")
     print(colOffset)
   }
@@ -102,10 +105,10 @@ classifyColor <-  function(image, RGB = NULL, colOffset = NULL,  resampleFactor 
     if (output != "class"){
       imdf = matrix(NA, nrow = length(vals), ncol = 3)
       imdf[-NAs,] = vdf
-      imgR = stack(apply(imdf, 2, function(x) raster(matrix(x, ncol =  ncol(image), nrow = nrow(image)))))
-      extent(imgR) = extent(image)
+      imgR = raster::stack(apply(imdf, 2, function(x) raster::raster(matrix(x, ncol =  raster::ncol(image), nrow = raster::nrow(image)))))
+      raster::extent(imgR) = raster::extent(image)
       if (plot) {
-        plotRGB(imgR)
+        raster::plotRGB(imgR)
       }
       out$RGB = imgR
     }
@@ -113,12 +116,12 @@ classifyColor <-  function(image, RGB = NULL, colOffset = NULL,  resampleFactor 
       vals[-NAs] = apply(vdf, 1,
                          function(x) which(sapply(1:kr,
                                                   function(j) all(abs(x - as.numeric(RGBr[j,])) == 0))))
-      imgC = matrix(vals, ncol =  ncol(image), nrow = nrow(image))
+      imgC = matrix(vals, ncol =  raster::ncol(image), nrow = raster::nrow(image))
       imgC = raster(imgC)
       #imgR[NAs] = NA
       raster::extent(imgC) = raster::extent(image)
       if (plot) {
-        cols = apply(as.data.frame(RGBr), 1, function(x) rgb(x[1],x[2],x[3], maxColorValue = 255))
+        cols = apply(raster::as.data.frame(RGBr), 1, function(x) grDevices::rgb(x[1],x[2],x[3], maxColorValue = 255))
         plot(imgC, col = cols, legend = F)
         plot(imgC, zlim = c(0,1), breaks = seq(0,1, 1/kr), col=cols, legend.only = TRUE,
              axis.args=list(at=seq(0,1, 1/kr)[-1]-1/kr*0.5,

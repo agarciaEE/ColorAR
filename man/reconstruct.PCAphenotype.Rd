@@ -16,16 +16,21 @@ reconstruct.PCAphenotype(x, imagePCA, PCnames = NULL, interpolate = 5)
 \item{interpolate}{Integer. Image interpolation to reduce NA values created by image transformation. Default = NULL.}
 }
 \value{
-The output from \code{\link{print}}
+The output from \code{\link{reconstruct.PCAphenotype}}
 }
 \description{
 Reconstruct color phenotype from PCA
 }
 \examples{
-tree <- ape::rtree(26, tip.label = letters[1:26])
-X <- data.frame(trait1 = runif(26, -10, 10), trait2 = runif(26, -25, 25))
-plotPhylomorphospace(tree, X)
+library(ColorAR)
+spca.coords <- data.frame(imgPCA12$pca$x[1:2,])
+rPCAphen <- reconstruct.PCAphenotype(spca.coords, imgPCA12)
+par(mfrow = c(2,2))
+raster::plotRGB(rPCAphen[[1]])
+raster::plotRGB(rPCAphen[[2]])
 \dontrun{
-plotPhylomorphospace(tree, X, palette = rainbow(6), col.branches = T)
+library(ColorAR)
+rpca.coords <- data.frame(apply(imgPCA12$pca$x[,1:5], 2, function(i) sample(i))[1:5,], row.names = 1:5)
+rPCAphen <- reconstruct.PCAphenotype(rpca.coords, imgPCA12)
 }
 }

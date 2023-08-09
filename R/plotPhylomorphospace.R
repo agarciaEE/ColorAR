@@ -17,10 +17,15 @@
 #' @param col.branches Logical whether to color the branches.
 #' @param add Logical whether to add plot to the previous one.
 #'
-#' @return The output from \code{\link{print}}
+#' @return The output from \code{\link{plotPhylomorphospace}}
 #' @export
-#' @import ape grDevices viridis phytools DescTools graphics
+#' @importFrom ape unroot rtree is.rooted
+#' @importFrom grDevices colorRampPalette
+#' @importFrom viridis viridis
+#' @importFrom phytools fastAnc
+#'
 #' @examples
+#' library(ColorAR)
 #' tree <- ape::rtree(26, tip.label = letters[1:26])
 #' X <- data.frame(trait1 = runif(26, -10, 10), trait2 = runif(26, -25, 25))
 #' plotPhylomorphospace(tree, X)
@@ -34,7 +39,7 @@ plotPhylomorphospace <- function(tree, X, cols = NULL,
                              xlim = range(X[, 1]), ylim = range(X[, 2]),
                              col.branches = F, add = F){
 
-  if(ape::is.rooted(tree)){tree <- ape::unroot(tree)}
+  if(ape::is.rooted(tree)){ tree <- ape::unroot(tree) }
   if (is.null(cols)){
     if(is.null(palette)){
       colRamp <- grDevices::colorRampPalette(viridis::viridis(9))(n=100)
@@ -72,15 +77,13 @@ plotPhylomorphospace <- function(tree, X, cols = NULL,
   YY <- matrix(bb[as.character(tree$edge)], nrow(tree$edge),
                2)
   if (!add){
-    #xlim = scales::expand_range(range(c(X[, 1], A[, 1])), 1.1)
-    #ylim = scales::expand_range(range(c(X[, 2], A[, 2])), 1.1)
     plot(x = A[1, 1], y = A[1, 2], xlim = xlim, ylim = ylim,
          xlab = xlab, ylab = ylab, pch = 16, cex = 0.1, col = "white",
          axes = T, frame.plot = TRUE)
   }
   for (i in 1:nrow(XX)) lines(XX[i, ], YY[i, ],
-                              col = DescTools::MixColor(col.edge[as.character(tree$edge[i,1])],
-                                                        col.edge[as.character(tree$edge[i,2])]), lwd = 1)
+                              col = mix.colors(c(col.edge[as.character(tree$edge[i,1])],
+                                                 col.edge[as.character(tree$edge[i,2])])), lwd = 1)
 
   zz <- c(tree$edge[1, 1], tree$edge[tree$edge[, 2] > length(tree$tip.label),
                                      2])

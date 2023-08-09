@@ -10,12 +10,13 @@ reverse.list(ll)
 \item{ll}{list of lists}
 }
 \value{
-The output from \code{\link{print}}
+The output from \code{\link{reverse.list}}
 }
 \description{
 Reverse list of lists.
 }
 \examples{
+library(ColorAR)
 ll <- list(a = list("A" = 1, "B" = 2, "C" = 3), b = list("D" = 1, "F" = 2, "G" = 3))
 reverse.list(ll)
 }

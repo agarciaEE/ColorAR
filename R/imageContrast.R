@@ -4,15 +4,17 @@
 #'
 #' @param image RGB raster image
 #'
-#' @return The output from \code{\link{print}}
+#' @return The output from \code{\link{imageContrast}}
 #' @export
-#' @import stats raster
+#' @importFrom stats na.exclude
+#' @importFrom ape rtree
+#' @importFrom raster ncol nrow as.data.frame
 #' @examples
-#' tree <- ape::rtree(26, tip.label = letters[1:26])
-#' X <- data.frame(trait1 = runif(26, -10, 10), trait2 = runif(26, -25, 25))
-#' plotPhylomorphospace(tree, X)
+#' img <- imgTransList[[1]]
+#' imgContrast <- imageContrast(img)
 #' \dontrun{
-#' plotPhylomorphospace(tree, X, palette = rainbow(6), col.branches = T)
+#' img <- imgTransList[[2]]
+#' imgContrast<- imageContrast(img)
 #' }
 imageContrast <- function(image){
 

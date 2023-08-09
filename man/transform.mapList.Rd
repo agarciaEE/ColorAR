@@ -27,16 +27,18 @@
 \item{interpolate}{Integer for the interpolateing factor.}
 }
 \value{
-The output from \code{\link{print}}
+The output from \code{\link{transform.mapList}}
 }
 \description{
 Internal function to transform images for PCA legend.
 }
 \examples{
-tree <- ape::rtree(26, tip.label = letters[1:26])
-X <- data.frame(trait1 = runif(26, -10, 10), trait2 = runif(26, -25, 25))
-plotPhylomorphospace(tree, X)
+library(ColorAR)
+data(imgPCA12)
+transform.mapList(imgPCA12$images, imgPCA12$ras, type = "raster")
 \dontrun{
-plotPhylomorphospace(tree, X, palette = rainbow(6), col.branches = T)
+library(ColorAR)
+data(imgPCA12)
+transform.mapList(imgPCA12$images, imgPCA12$ras, type = "RGB", interpolate  = 5)
 }
 }

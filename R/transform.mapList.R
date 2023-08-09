@@ -9,25 +9,27 @@
 #' @param is.NA value to give to NA values.
 #' @param interpolate Integer for the interpolateing factor.
 #'
-#' @return The output from \code{\link{print}}
-#' @import raster
+#' @return The output from \code{\link{transform.mapList}}
+#' @importFrom raster extent raster crs ncol nrow resample disaggregate mean nlayers
 #'
 #' @examples
-#' tree <- ape::rtree(26, tip.label = letters[1:26])
-#' X <- data.frame(trait1 = runif(26, -10, 10), trait2 = runif(26, -25, 25))
-#' plotPhylomorphospace(tree, X)
+#' library(ColorAR)
+#' data(imgPCA12)
+#' transform.mapList(imgPCA12$images, imgPCA12$ras, type = "raster")
 #' \dontrun{
-#' plotPhylomorphospace(tree, X, palette = rainbow(6), col.branches = T)
+#' library(ColorAR)
+#' data(imgPCA12)
+#' transform.mapList(imgPCA12$images, imgPCA12$ras, type = "RGB", interpolate  = 5)
 #' }
 transform.mapList <- function(imgList, mapList, res = NULL, type  = c("RGB", "raster"), is.NA = 0, interpolate = NULL){
 
   ras = raster::extent(imgList[[1]])
-  rRe <- raster::raster(nrow=nrow(imgList[[1]]),ncol=ncol(imgList[[1]]))
-  crs(rRe) = NA
+  rRe <- raster::raster(nrow=raster::nrow(imgList[[1]]),ncol=raster::ncol(imgList[[1]]))
+  raster::crs(rRe) = NA
   raster::extent(rRe) <- ras
   for (i in 1:length(mapList)){
     if(!is.null(res)){
-      e = as.vector(extent(mapList[[i]]))
+      e = as.vector(raster::extent(mapList[[i]]))
       ratio = (e[2]-e[1])/(e[4]-e[3])
       ras = e
       trRe <- raster::raster(nrow=res,ncol=floor(res*ratio))

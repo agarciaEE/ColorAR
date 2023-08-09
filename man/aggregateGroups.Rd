@@ -18,16 +18,20 @@ aggregateGroups(pca, groups, PCx = 1, PCy = 2, scale = F)
 \item{scale}{Whether set scale TRUE/FALSE in the PCA prcomp function. Default FALSE}
 }
 \value{
-The output from \code{\link{print}}
+The output from \code{\link{aggregateGroups}}
 }
 \description{
 Aggregate PCA scores by groups and compute centroids and standard deviations.
 }
 \examples{
-tree <- ape::rtree(26, tip.label = letters[1:26])
-X <- data.frame(trait1 = runif(26, -10, 10), trait2 = runif(26, -25, 25))
-plotPhylomorphospace(tree, X)
+df <- sapply(1:10, function(i) runif(50))
+comp <- stats::prcomp(df)
+groups <- sample(1:3, 50, replace = T)
+groups_df <- aggregateGroups(comp, groups, PCx = 1, PCy = 2, scale = T)
 \dontrun{
-plotPhylomorphospace(tree, X, palette = rainbow(6), col.branches = T)
+df <- sapply(1:10, function(i) runif(100))
+comp <- stats::prcomp(df)
+groups <- sample(LETTERS[1:5], 100, replace = T)
+groups_df <- aggregateGroups(comp, groups, PCx = 1, PCy = 2, scale = T)
 }
 }

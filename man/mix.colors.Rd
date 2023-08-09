@@ -10,7 +10,7 @@ mix.colors(cols)
 \item{cols}{Vector of colors.}
 }
 \value{
-The output from \code{\link{print}}
+The output from \code{\link{mix.colors}}
 }
 \description{
 Mix multiple colours into one.

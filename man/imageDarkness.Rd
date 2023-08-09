@@ -10,16 +10,20 @@ imageDarkness(image)
 \item{image}{RGB raster image}
 }
 \value{
-The output from \code{\link{print}}
+The output from \code{\link{imageDarkness}}
 }
 \description{
 Extract image darkness
 }
 \examples{
-tree <- ape::rtree(26, tip.label = letters[1:26])
-X <- data.frame(trait1 = runif(26, -10, 10), trait2 = runif(26, -25, 25))
-plotPhylomorphospace(tree, X)
+libary(ColorAR)
+data(imgTransList)
+img <- imgTransList[[1]]
+imgDarkness <- imageDarkness(img)
 \dontrun{
-plotPhylomorphospace(tree, X, palette = rainbow(6), col.branches = T)
+libary(ColorAR)
+data(imgTransList)
+img <- imgTransList[[2]]
+imgDarkness<- imageDarkness(img)
 }
 }

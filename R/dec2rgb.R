@@ -3,7 +3,7 @@
 #' @description Convert decimal colour code to rgb colour code
 #' @param c Decimal color code
 #'
-#' @return The output from \code{\link{print}}
+#' @return The output from \code{\link{dec2rgb}}
 #' @export
 #'
 #' @examples

@@ -24,7 +24,7 @@ classifyColor(
 \arguments{
 \item{image}{RGB raster image}
 
-\item{RGB}{n rows by 3 columns data.frame with target colors to classify. each column must be R, G and B color values, whereas numer of rows will be number of target colors. Default is NULL.}
+\item{RGB}{n rows by 3 columns data.frame with target colors to classify. each column must be R, G and B color values, whereas number of rows will be number of target colors. Default is NULL.}
 
 \item{colOffset}{n target colors vector of numeric values between 0 and 1. Color offset threshold to assign the target color. Default = NULL. If NULL, bg.offset will be estimated}
 
@@ -51,16 +51,18 @@ classifyColor(
 \item{plot}{Wheather plot classyfied image or not. Default FALSE}
 }
 \value{
-The output from \code{\link{print}}
+The output from \code{\link{classifyColor}}
 }
 \description{
 Image color classification into color categories or classes.
 }
 \examples{
-tree <- ape::rtree(26, tip.label = letters[1:26])
-X <- data.frame(trait1 = runif(26, -10, 10), trait2 = runif(26, -25, 25))
-plotPhylomorphospace(tree, X)
+RGB = data.frame(red = c(255, 255, 0), green = c(255, 165, 0), blue = c(255, 0, 0), row.names = c("white", "orange", "black"))
+imgClass <- classifyColor(imgTransList[[1]], RGB = RGB, allow.admixture = TRUE, output = "both")
+plot(imgClass$class)
 \dontrun{
-plotPhylomorphospace(tree, X, palette = rainbow(6), col.branches = T)
+RGB = data.frame(red = c(255, 255, 0), green = c(255, 165, 0), blue = c(255, 0, 0), row.names = c("white", "orange", "black"))
+imgClass <- classifyColor(imgTransList[[2]], RGB = RGB, allow.admixture = TRUE, output = "both")
+raster::plotRGB(imgClass$RGB)
 }
 }

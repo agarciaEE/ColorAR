@@ -12,7 +12,7 @@ color.candidates(x, n)
 \item{n}{Optional. Number of candidates to search for.}
 }
 \value{
-The output from \code{\link{print}}
+The output from \code{\link{color.candidates}}
 }
 \description{
 Explore main colour candidates on an image.

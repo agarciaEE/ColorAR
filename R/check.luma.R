@@ -2,8 +2,9 @@
 #'
 #' @param col Target color
 #'
-#' @return The output from \code{\link{print}}
+#' @return The output from \code{\link{check.luma}}
 #' @export
+#' @importFrom grDevices col2rgb
 #'
 #' @examples
 #' check.luma("red")

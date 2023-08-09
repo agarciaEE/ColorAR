@@ -6,9 +6,12 @@
 #' @param RGB Vector of RGB target color (numeric)
 #' @param min Minimum offset
 #'
-#' @return The output from \code{\link{print}}
+#' @return The output from \code{\link{colOffset}}
 #' @export
-#' @import raster stats jpeg
+#' @importFrom raster stack raster nlayers as.data.frame unstack
+#' @importFrom stats na.exclude quantile density
+#' @importFrom jpeg readJPEG
+#' @importFrom scales rescale
 #' @examples
 #' img <- jpeg::readJPEG(system.file("img", "Rlogo.jpg", package="jpeg"))
 #' img <- raster::stack(sapply(1:3, function(i) raster::raster(scales::rescale(img[,,1], to = c(0,255)))))

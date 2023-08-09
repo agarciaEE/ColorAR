@@ -12,16 +12,16 @@ imageLightness(image, output = c("value", "raster", "both"))
 \item{output}{type of output desired. If 'value', gives the average perceived lightness of the image. If 'raster' gives a raster with values from 0 to 1 with the perceived lightness value.}
 }
 \value{
-The output from \code{\link{print}}
+The output from \code{\link{imageLightness}}
 }
 \description{
 Extract image perceived lightness
 }
 \examples{
-tree <- ape::rtree(26, tip.label = letters[1:26])
-X <- data.frame(trait1 = runif(26, -10, 10), trait2 = runif(26, -25, 25))
-plotPhylomorphospace(tree, X)
+img <- imgTransList[[1]]
+imgLightness <- imageLightness(img)
 \dontrun{
-plotPhylomorphospace(tree, X, palette = rainbow(6), col.branches = T)
+img <- imgTransList[[2]]
+imgLightness <- imageLightness(img)
 }
 }

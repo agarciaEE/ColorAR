@@ -23,16 +23,26 @@
 #' @param bg.offset numeric value between 0 and 1. If NULL, bg.offset will be estimated. color offset threshold to remove background color
 #' @param plot  If "compare", plots original image vs transformed. If "result", plot restuling transformed image. Default = FALSE
 #'
-#' @return The output from \code{\link{print}}
+#' @return The output from \code{\link{imageTransformation}}
 #' @export
-#' @import smoothr sp raster Morpho patternize utils
+#' @importFrom smoothr smooth
+#' @importFrom sp SpatialPolygons Polygons Polygon disaggregate
+#' @importFrom raster extent crop raster resample focal focalWeight stack as.data.frame plotRGB mask flip crs rasterize
+#' @importFrom Morpho procSym computeTransform applyTransform
+#' @importFrom patternize lanArray redRes
+#' @importFrom utils capture.output
+#'
 #' @examples
-#' tree <- ape::rtree(26, tip.label = letters[1:26])
-#' X <- data.frame(trait1 = runif(26, -10, 10), trait2 = runif(26, -25, 25))
-#' plotPhylomorphospace(tree, X)
-#' \dontrun{
-#' plotPhylomorphospace(tree, X, palette = rainbow(6), col.branches = T)
-#' }
+#' library(ColorAR)
+#' data(imageList)
+#' data(landmarkList)
+#' lndmks_2drop  = c(2, 7, 28, 29)
+#' imgTransList = imageTransformation(imageList[1:5], landmarkList[1:5], adjustCoords = T, transformRef = "meanshape", drop = lndmks_2drop,
+#' crop = FALSE, cropOffset = c(0, 0, 0, 0), res = 300, keep.ASP  = T,
+#' removebg.by = "landmarks", smooth = 1, rescale = T,
+#' transformType = "tps", focal = F, sigma = 3, interpolate =  5,
+#' plot = "compare")
+#'
 imageTransformation <- function(sampleList, landList, adjustCoords = F, transformRef = "meanshape",
                                 crop = FALSE, cropOffset = c(0, 0, 0, 0), res = 300, keep.ASP = T, drop = NULL,
                                 removebg.by = c(FALSE, "color", "landmarks"), smooth = FALSE, rescale = F, resampleFactor = NULL,
@@ -101,7 +111,7 @@ imageTransformation <- function(sampleList, landList, adjustCoords = F, transfor
     invisible(utils::capture.output(mapTransformed <- Morpho::applyTransform(as.matrix(mapDF[,1:2]),transMatrix)))
     ASP = 1
     if (keep.ASP == T){
-      ext = as.vector(extent(image))
+      ext = as.vector(raster::extent(image))
       ASP = (ext[2]-ext[1])/(ext[4]-ext[3])
     }
     rRe <- raster::raster(ncol = res*ASP, nrow = res)
@@ -130,13 +140,13 @@ imageTransformation <- function(sampleList, landList, adjustCoords = F, transfor
     }
     if (rescale){
       rRe <- raster::raster(nrow=dim(image)[1],ncol=dim(image)[2])
-      crs(rRe) = raster::crs(image)
+      raster::crs(rRe) = raster::crs(image)
       raster::extent(rRe) <-  raster::extent(image)
       extent(imgTransformed) = raster::extent(image)
       imgTransformed = raster::stack(raster::resample(imgTransformed, rRe, method = "ngb"))
     }
     if (is.numeric(interpolate)){
-      imgTransformed = raster::disaggregate(imgTransformed, fact = interpolate, method = "bilinear")
+      imgTransformed = sp::disaggregate(imgTransformed, fact = interpolate, method = "bilinear")
       imgTransformed = raster::resample(imgTransformed, rRe, method = "ngb")
     }
     if (plot == "result") {
@@ -147,15 +157,15 @@ imageTransformation <- function(sampleList, landList, adjustCoords = F, transfor
       par(mfrow = c(1, 2))
       if(nlayers(imgTransformed) == 3){
         raster::plotRGB(image)
-        text(extent(image)[2],extent(image)[3], "original", adj = c(1,0))
+        text(raster::extent(image)[2], raster::extent(image)[3], "original", adj = c(1,0))
         raster::plotRGB(imgTransformed, asp = 1)
-        text(extent(imgTransformed)[2],extent(imgTransformed)[3], "transformed", adj = c(1,0))
+        text(raster::extent(imgTransformed)[2], raster::extent(imgTransformed)[3], "transformed", adj = c(1,0))
       }
       if(nlayers(imgTransformed) == 1){
         plot(image)
-        text(extent(image)[2],extent(image)[3], "original", adj = c(1,0))
+        text(raster::extent(image)[2], raster::extent(image)[3], "original", adj = c(1,0))
         plot(imgTransformed)
-        text(extent(imgTransformed)[2],extent(imgTransformed)[3], "transformed", adj = c(1,0))
+        text(raster::extent(imgTransformed)[2], raster::extent(imgTransformed)[3], "transformed", adj = c(1,0))
       }
     }
     rasterList[[names(landList)[n]]] <- imgTransformed

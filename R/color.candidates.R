@@ -4,9 +4,12 @@
 #' @param n Optional. Number of candidates to search for.
 #'
 #' @description Explore main colour candidates on an image.
-#' @return The output from \code{\link{print}}
+#' @return The output from \code{\link{color.candidates}}
 #' @export
-#' @import raster stats jpeg
+#' @importFrom raster stack raster as.data.frame
+#' @importFrom stats na.exclude
+#' @importFrom jpeg readJPEG
+#' @importFrom scales rescale
 #' @examples
 #' img <- jpeg::readJPEG(system.file("img", "Rlogo.jpg", package="jpeg"))
 #' img <- sapply(1:3, function(i) scales::rescale(img[,,1], to = c(0,255)))

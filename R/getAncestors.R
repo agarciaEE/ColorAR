@@ -3,7 +3,7 @@
 #' @param tree get ancestor nodes of a taxon in a 'phylo' class tree
 #' @param x tip number
 #'
-#' @return The output from \code{\link{print}}
+#' @return The output from \code{\link{getAncestors}}
 #' @export
 #' @examples
 #' tree <- ape::rtree(26, tip.label = letters[1:26])

@@ -12,7 +12,7 @@ col.adjacency(
   bckgr = NULL,
   k.names = NULL,
   res = nrow(r),
-  plot = T,
+  plot = F,
   iterations = 100,
   p.test = T
 )
@@ -39,16 +39,20 @@ col.adjacency(
 \item{p.test}{whether to perform permutation tests (TRUE) or not (FALSE). Default TRUE.}
 }
 \value{
-The output from \code{\link{print}}
+The output from \code{\link{col.adjacency}}
 }
 \description{
 Color adjacency function computes estimates of the color transitions across the specified body axis.
 }
 \examples{
-tree <- ape::rtree(26, tip.label = letters[1:26])
-X <- data.frame(trait1 = runif(26, -10, 10), trait2 = runif(26, -25, 25))
-plotPhylomorphospace(tree, X)
+RGB = data.frame(red = c(255, 255, 0), green = c(255, 165, 0), blue = c(255, 0, 0), row.names = c("white", "orange", "black"))
+imgClass <- classifyColor(imgTransList[[1]], RGB = RGB, allow.admixture = FALSE, output = "class")
+CA_df <- col.adjacency(imgClass$class, bckgr = 0)
+print(CA_df)
 \dontrun{
-plotPhylomorphospace(tree, X, palette = rainbow(6), col.branches = T)
+RGB = data.frame(red = c(255, 255, 0), green = c(255, 165, 0), blue = c(255, 0, 0), row.names = c("white", "orange", "black"))
+imgClass <- classifyColor(imgTransList[[2]], RGB = RGB, allow.admixture = TRUE, output = "both")
+CA_df <- col.adjacency(imgClass$class, bckgr = 0)
+print(CA_df)
 }
 }

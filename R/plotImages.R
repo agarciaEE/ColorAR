@@ -14,11 +14,16 @@
 #' @param adj text adjustment.
 #' @param cols vector of colors to use if images are rasterLayers.
 #'
-#' @return The output from \code{\link{print}}
+#' @return The output from \code{\link{plotImages}}
 #' @export
-#' @import raster graphics grDevices
+#' @importFrom raster stack raster extent image
+#' @importFrom graphics text rasterImage
+#' @importFrom grDevices colorRampPalette
+#' @importFrom jpeg readJPEG
+#' @importFrom scales rescale
 #'
 #' @examples
+#' library(ColorAR)
 #' img <- jpeg::readJPEG(system.file("img", "Rlogo.jpg", package="jpeg"))
 #' img <- img <- raster::stack(sapply(1:3, function(i) raster::raster(scales::rescale(img[,,1], to = c(0,255)))))
 #' imgList <- list(img, img, img)
@@ -27,8 +32,10 @@
 #' plot.new()
 #' plotImages(x, y, imgList, names = letters[1:3], pos = 2, adj = 1)
 #' \dontrun{
-#' plot.new()
-#' plotImages(x, y, imgList, names = letters[1:3], pos = 2, adj = 1)
+#' #' library(ColorAR)
+#' xy = expand.grid(1:7, 1:3)
+#' plot(NULL, xlim = c(0.5,7.5), ylim = c(0.5,3.5), type="n", xlab="", ylab="", xaxt='n', yaxt='n', bty="n")
+#' plotImages(xy[,1], xy[,2], imageList, names = letters[1:length(imageList)], pos = 2, adj = 2)
 #' }
 plotImages <- function(x, y, images, width = 0.1, height = width, interpolate = FALSE, names = NULL, cex = 1, pos = 1, adj = 1,
                         cols  = c("red", "grey90", "blue")){
@@ -73,11 +80,10 @@ plotImages <- function(x, y, images, width = 0.1, height = width, interpolate = 
       e = as.vector( raster::extent(images[[ii]]))
       ratio = (e[2]-e[1])/(e[4]-e[3])
       raster::extent(images[[ii]]) =  c(x[ii] - 0.5*width[ii], x[ii] + 0.5*width[ii], y[ii] - 0.5*height[ii]*ratio, y[ii] + 0.5*height[ii]*ratio)
-      graphics::image(images[[ii]], interpolate=interpolate, add = T, legend = F, col = cols)
+      raster::image(images[[ii]], interpolate=interpolate, add = T, legend = F, col = cols)
     }
     if(!is.null(names)){
-      #mtext(names[ii],side=pos[ii],col="black", cex = cex)
-      graphics::text(x[ii], y[ii], names[ii], pos = pos, adj = adj)
+      graphics::text(x[ii], y[ii] - 0.5*height[ii], names[ii], pos = pos, adj = adj)
     }
   }
 }

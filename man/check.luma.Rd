@@ -10,7 +10,7 @@ check.luma(col)
 \item{col}{Target color}
 }
 \value{
-The output from \code{\link{print}}
+The output from \code{\link{check.luma}}
 }
 \description{
 Check color luminosity

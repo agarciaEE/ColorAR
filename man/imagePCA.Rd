@@ -84,16 +84,15 @@ imagePCA(
 \item{palette}{palette of brewer.pal colors to use. If NULL and colPCA = NULL, viridis palette will be used. Default NULL.}
 }
 \value{
-The output from \code{\link{print}}
+The output from \code{\link{imagePCA}}
 }
 \description{
 Performs PCA on a list of images
 }
 \examples{
-tree <- ape::rtree(26, tip.label = letters[1:26])
-X <- data.frame(trait1 = runif(26, -10, 10), trait2 = runif(26, -25, 25))
-plotPhylomorphospace(tree, X)
-\dontrun{
-plotPhylomorphospace(tree, X, palette = rainbow(6), col.branches = T)
-}
+library(ColorAR)
+data(imgTransList)
+imgPCA12 <-  imagePCA(imgTransList, PCx = 1, PCy = 2, scale = F, plot.eigen = F, plot.PCA = F,
+                        interpolate = 5, plot.names = F, plot.images = F, plot.tree = NULL, type = "RGB" , as.RGB = F)
+
 }

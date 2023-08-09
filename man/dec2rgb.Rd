@@ -10,7 +10,7 @@ dec2rgb(c)
 \item{c}{Decimal color code}
 }
 \value{
-The output from \code{\link{print}}
+The output from \code{\link{dec2rgb}}
 }
 \description{
 Convert decimal colour code to rgb colour code

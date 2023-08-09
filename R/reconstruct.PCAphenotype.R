@@ -6,15 +6,23 @@
 #' @param PCnames name of PCs to use in the reconstruction. If NULL all will be taken, Default is NULL.
 #' @param interpolate Integer. Image interpolation to reduce NA values created by image transformation. Default = NULL.
 #'
-#' @return The output from \code{\link{print}}
+#' @return The output from \code{\link{reconstruct.PCAphenotype}}
 #' @export
-#' @import stats scales raster
+#' @importFrom stats na.exclude
+#' @importFrom scales rescale
+#' @importFrom raster nrow ncol extent raster crs xyFromCell stack disaggregate aggregate
+#'
 #' @examples
-#' tree <- ape::rtree(26, tip.label = letters[1:26])
-#' X <- data.frame(trait1 = runif(26, -10, 10), trait2 = runif(26, -25, 25))
-#' plotPhylomorphospace(tree, X)
+#' library(ColorAR)
+#' spca.coords <- data.frame(imgPCA12$pca$x[1:2,])
+#' rPCAphen <- reconstruct.PCAphenotype(spca.coords, imgPCA12)
+#' par(mfrow = c(2,2))
+#' raster::plotRGB(rPCAphen[[1]])
+#' raster::plotRGB(rPCAphen[[2]])
 #' \dontrun{
-#' plotPhylomorphospace(tree, X, palette = rainbow(6), col.branches = T)
+#' library(ColorAR)
+#' rpca.coords <- data.frame(apply(imgPCA12$pca$x[,1:5], 2, function(i) sample(i))[1:5,], row.names = 1:5)
+#' rPCAphen <- reconstruct.PCAphenotype(rpca.coords, imgPCA12)
 #' }
 reconstruct.PCAphenotype <- function(x, imagePCA, PCnames = NULL, interpolate = 5) {
 
@@ -27,10 +35,12 @@ reconstruct.PCAphenotype <- function(x, imagePCA, PCnames = NULL, interpolate = 
   }
   # extract mean image from PCA
   r = imagePCA$ras$center
+  NR <- raster::nrow(r)
+  NC <- raster::ncol(r)
   # create raster template
   ras = raster::extent(r)
-  rRe <- raster::raster(nrow=nrow(r),ncol=ncol(r))
-  crs(rRe) = NA
+  rRe <- raster::raster(nrow=NR,ncol=NC)
+  raster::crs(rRe) = NA
   raster::extent(rRe) <- ras
   # extract cell IDs with values
   rasDF <- stats::na.exclude(raster::as.data.frame(r))
@@ -54,12 +64,12 @@ reconstruct.PCAphenotype <- function(x, imagePCA, PCnames = NULL, interpolate = 
 
   for(i in 1:nrow(x)) {
     pc.vec[as.numeric(gsub("PC", "", PCnames))] <- as.numeric(x[i,PCnames])
-    xR[[i]] <- lapply(1:3, function(j) rep(NA, ncol(r)*nrow(r)))
+    xR[[i]] <- lapply(1:3, function(j) rep(NA, NC*NR))
     for (j in 1:3){
       xR[[i]][[j]][as.numeric(cellIDs)] = as.integer(scales::rescale(as.vector(pc.vec %*% t(rotation[[j]])), to = c(0,255)))
     }
-    mapR[[i]] <- raster::stack(sapply(1:3, function(j) raster::raster(t(matrix(xR[[i]][[j]], ncol = nrow(r),
-                                                                       nrow = ncol(r))))))
+    mapR[[i]] <- raster::stack(sapply(1:3, function(j) raster::raster(t(matrix(xR[[i]][[j]], ncol = NR,
+                                                                       nrow = NC)))))
     if (is.numeric(interpolate)) {
       mapR[[i]] <-  raster::disaggregate(mapR[[i]], fact = interpolate, method = "bilinear")
       mapR[[i]] <- raster::aggregate(mapR[[i]], interpolate)
@@ -67,7 +77,7 @@ reconstruct.PCAphenotype <- function(x, imagePCA, PCnames = NULL, interpolate = 
         mapR[[i]][[j]][] <- as.integer(mapR[[i]][[j]][])
       }
     }
-    extent(mapR[[i]]) <-  raster::extent(rRe)
+    raster::extent(mapR[[i]]) <-  raster::extent(rRe)
   }
   names(mapR) <- as.character(rownames(x))
   return(mapR)

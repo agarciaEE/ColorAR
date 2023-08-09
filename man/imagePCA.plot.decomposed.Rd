@@ -7,12 +7,15 @@
 imagePCA.plot.decomposed(
   imagePCA,
   tree,
-  cols = NULL,
+  groups = NULL,
+  scale = F,
+  PCA.cols = NULL,
   tree.cols = NULL,
-  images = NULL,
-  ras = NULL,
-  PCA.legend = T,
-  tree.legend = T
+  plot.images = F,
+  PCA.legend = NULL,
+  tree.legend = NULL,
+  pch = 19,
+  ...
 )
 }
 \arguments{
@@ -20,29 +23,38 @@ imagePCA.plot.decomposed(
 
 \item{tree}{Optional, if class 'phylo' tree is to be integrated in the output.}
 
-\item{cols}{vector of colors used for visualize color changes. Default = NULL.}
+\item{groups}{vector of length equal to the number of images indicating the grouping.}
+
+\item{scale}{logical whether to scale the PCA scores. Default is FALSE.}
 
 \item{tree.cols}{vector of k colors with length of n tips of the given tree. If NULL, coltree will match colPCA. Default is NULL.}
 
-\item{images}{vector of images to be displayed. Defaul it NULL}
-
-\item{ras}{ras}
+\item{plot.images}{logical whether to plot images. Default is FALSE.}
 
 \item{PCA.legend}{Logical whether to plot PCA legend. Default TRUE.}
 
 \item{tree.legend}{Logical whether to plot tree legend. Default TRUE.}
+
+\item{...}{extra arguments passed to graphical functions (e.g. cex = 1)}
+
+\item{cols}{vector of colors used for visualize color changes. Default = NULL.}
 }
 \value{
-The output from \code{\link{print}}
+The output from \code{\link{imagePCA.plot.decomposed}}
 }
 \description{
 plot imagePCA object with decomposed PCA axis
 }
 \examples{
-tree <- ape::rtree(26, tip.label = letters[1:26])
-X <- data.frame(trait1 = runif(26, -10, 10), trait2 = runif(26, -25, 25))
-plotPhylomorphospace(tree, X)
+library(ColorAR)
+data(tree)
+data(imgPCA12)
+imagePCA.plot.decomposed(imgPCA12, tree)
 \dontrun{
-plotPhylomorphospace(tree, X, palette = rainbow(6), col.branches = T)
+library(ColorAR)
+data(imgPCA12)
+gtree <- ape::rtree(3, tip.label = letters[1:3])
+groups <- sample(letters[1:3], length(imgPCA12$images), replace = T)
+imagePCA.plot.decomposed(imgPCA12, gtree, groups = groups)
 }
 }

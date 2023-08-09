@@ -51,12 +51,13 @@ plotPhylomorphospace(
 \item{add}{Logical whether to add plot to the previous one.}
 }
 \value{
-The output from \code{\link{print}}
+The output from \code{\link{plotPhylomorphospace}}
 }
 \description{
 Modifyed phytools phylomorphospace function. Plot integrated phylogenetic tree on colour PCA.
 }
 \examples{
+library(ColorAR)
 tree <- ape::rtree(26, tip.label = letters[1:26])
 X <- data.frame(trait1 = runif(26, -10, 10), trait2 = runif(26, -25, 25))
 plotPhylomorphospace(tree, X)

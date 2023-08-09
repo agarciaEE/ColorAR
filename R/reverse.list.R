@@ -3,10 +3,11 @@
 #' @description  Reverse list of lists.
 #' @param ll list of lists
 #'
-#' @return The output from \code{\link{print}}
+#' @return The output from \code{\link{reverse.list}}
 #' @export
 #'
 #' @examples
+#' library(ColorAR)
 #' ll <- list(a = list("A" = 1, "B" = 2, "C" = 3), b = list("D" = 1, "F" = 2, "G" = 3))
 #' reverse.list(ll)
 reverse.list <-  function(ll) {

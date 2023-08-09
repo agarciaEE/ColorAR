@@ -12,16 +12,20 @@ imageSI(image, output = c("value", "raster", "both"))
 \item{output}{type of output desired. If 'value', gives the average color saturation and intensity  of the image. If 'raster' gives a raster with values from 0 to 1 with the saturation and intensity value.}
 }
 \value{
-The output from \code{\link{print}}
+The output from \code{\link{imageSI}}
 }
 \description{
 Extract image saturation and intensity
 }
 \examples{
-tree <- ape::rtree(26, tip.label = letters[1:26])
-X <- data.frame(trait1 = runif(26, -10, 10), trait2 = runif(26, -25, 25))
-plotPhylomorphospace(tree, X)
+libary(ColorAR)
+data(imgTransList)
+img <- imgTransList[[1]]
+imgDarkness <- imageSI(img)
 \dontrun{
-plotPhylomorphospace(tree, X, palette = rainbow(6), col.branches = T)
+libary(ColorAR)
+data(imgTransList)
+img <- imgTransList[[2]]
+imgDarkness<- imageSI(img)
 }
 }

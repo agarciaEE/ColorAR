@@ -10,7 +10,7 @@ extractIntensity(
   method = c("RGB", "dec"),
   colOffset = NULL,
   output = c("both", "value", "raster"),
-  plot = T
+  plot = F
 )
 }
 \arguments{
@@ -24,19 +24,21 @@ extractIntensity(
 
 \item{output}{type of output desired. If 'value', gives the average color intensity  of the image. If 'raster' gives a raster with values from 0 to 1 with the intensity value.}
 
-\item{plot}{Wheather plot classyfied image or not. Default is TRUE}
+\item{plot}{Wheather plot classyfied image or not. Default is FALSE}
 }
 \value{
-The output from \code{\link{print}}
+The output from \code{\link{extractIntensity}}
 }
 \description{
 Extract color intensity
 }
 \examples{
-tree <- ape::rtree(26, tip.label = letters[1:26])
-X <- data.frame(trait1 = runif(26, -10, 10), trait2 = runif(26, -25, 25))
-plotPhylomorphospace(tree, X)
+img <- imgTransList[[1]]
+targetColor <- c(255, 165, 0)
+Orange_intensity <- extractIntensity(img, targetColor)
 \dontrun{
-plotPhylomorphospace(tree, X, palette = rainbow(6), col.branches = T)
+img <- imgTransList[[2]]
+targetColor <- c(255, 255, 255)
+White_intensity<- extractIntensity(img, targetColor)
 }
 }

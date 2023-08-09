@@ -16,16 +16,18 @@ removebg(image, bgcol = NULL, bg.offset = NULL, plot = F)
 \item{plot}{Logical.}
 }
 \value{
-The output from \code{\link{print}}
+The output from \code{\link{removebg}}
 }
 \description{
 ## remove the background color of an image using color detection.
 }
 \examples{
+library(ColorAR)
 img <- jpeg::readJPEG(system.file("img", "Rlogo.jpg", package="jpeg"))
 img <- raster::stack(sapply(1:3, function(i) raster::raster(scales::rescale(img[,,1], to = c(0,255)))))
 removebg(img, bgcol = c(255, 255, 255), bg.offset = 0.1)
 \dontrun{
+library(ColorAR)
 img <- jpeg::readJPEG(system.file("img", "Rlogo.jpg", package="jpeg"))
 img <- raster::stack(sapply(1:3, function(i) raster::raster(scales::rescale(img[,,1], to = c(0,255)))))
 removebg(img, c(133,133,133))

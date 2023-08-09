@@ -13,80 +13,93 @@ status](https://ci.appveyor.com/api/projects/status/github/agarciaEE/ColorAR?bra
 coverage](https://codecov.io/gh/agarciaEE/ColorAR/branch/main/graph/badge.svg)](https://app.codecov.io/gh/agarciaEE/ColorAR?branch=main)
 <!-- badges: end -->
 
-The goal of ColorAR is to …
+The goal of ColorAR is to provide a set of functions to compute
+coloration metrics from images and perform comparative analyses.
 
 ## Installation
 
 You can install the development version of ColorAR like so:
 
 ``` r
-# FILL THIS IN! HOW CAN PEOPLE INSTALL YOUR DEV PACKAGE?
+library(devtools)
+install::github("agarciaEE/ColorAR")
 ```
 
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
+This is a basic example which shows you some functions:
 
 ``` r
+# load package
 library(ColorAR)
-#> Warning: replacing previous import 'ape::zoom' by 'raster::zoom' when loading
-#> 'ColorAR'
-#> Warning: replacing previous import 'ape::rotate' by 'raster::rotate' when
-#> loading 'ColorAR'
-#> Warning: replacing previous import 'DescTools::Range' by 'scales::Range' when
-#> loading 'ColorAR'
-#> Warning: replacing previous import 'phytools::rescale' by 'scales::rescale'
-#> when loading 'ColorAR'
-#> Warning: replacing previous import 'raster::density' by 'stats::density' when
-#> loading 'ColorAR'
-#> Warning: replacing previous import 'raster::weighted.mean' by
-#> 'stats::weighted.mean' when loading 'ColorAR'
-#> Warning: replacing previous import 'raster::predict' by 'stats::predict' when
-#> loading 'ColorAR'
-#> Warning: replacing previous import 'raster::aggregate' by 'stats::aggregate'
-#> when loading 'ColorAR'
-#> Warning: replacing previous import 'raster::quantile' by 'stats::quantile' when
-#> loading 'ColorAR'
-#> Warning: replacing previous import 'raster::update' by 'stats::update' when
-#> loading 'ColorAR'
-#> Warning: replacing previous import 'smoothr::smooth' by 'stats::smooth' when
-#> loading 'ColorAR'
-#> Warning: replacing previous import 'raster::tail' by 'utils::tail' when loading
-#> 'ColorAR'
-#> Warning: replacing previous import 'raster::stack' by 'utils::stack' when
-#> loading 'ColorAR'
-#> Warning: replacing previous import 'raster::unstack' by 'utils::unstack' when
-#> loading 'ColorAR'
-#> Warning: replacing previous import 'raster::head' by 'utils::head' when loading
-#> 'ColorAR'
-#> Warning: replacing previous import 'scales::viridis_pal' by
-#> 'viridis::viridis_pal' when loading 'ColorAR'
-## basic example code
+
+# get data
+data("imgTransList")
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
+Compute color proportion of an image:
 
 ``` r
-summary(cars)
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
+targetColor <- c(255, 165, 0) #orange RGB code
+
+Orange_proportion <- extractColor(imgTransList[[1]], targetColor)
+#> Warning in colOffset(image, RGB): Target colour outside colour candidates
+#> 3 color candidates...
+#> Most proximal candidate colour is:
+#> 255 246 255
+
+print(Orange_proportion$P) # print proportion
+#> [1] 0.2704314
+plot(Orange_proportion$ras) # plot color distribution on the image
 ```
 
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date. `devtools::build_readme()` is handy for this. You could also
-use GitHub Actions to re-render `README.Rmd` every time you push. An
-example workflow can be found here:
-<https://github.com/r-lib/actions/tree/v1/examples>.
+<img src="man/figures/README-color_proportion_example-1.png" width="100%" />
 
-You can also embed plots, for example:
+Classify image based on target colors:
 
-<img src="man/figures/README-pressure-1.png" width="100%" />
+``` r
+# define a data frame with the target colors RGB codes.
+targetColors = data.frame(red = c(255, 255, 0),
+                 green = c(255, 165, 0),
+                 blue = c(255, 0, 0),
+                 row.names = c("white", "orange", "black"))
+  
+imgClass <- classifyColor(imgTransList[[1]], RGB = targetColors, allow.admixture = F, output = "both")
+#> Computing colors' offsets...
+#> Target colour within colour candidates
+#> Warning in colOffset(image, x): Target colour outside colour candidates
+#> 3 color candidates...
+#> Most proximal candidate colour is:
+#> 255 246 255
+#> Target colour within colour candidates
+#> Selected offsets:
+#>     white    orange     black 
+#> 0.3231898 0.3234802 0.3537182
+#> Classifying image...
+#> Admixture of target colors present...
+#> Done
 
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub and CRAN.
+par(mfrow = c(1,2))
+plot(imgClass$class) # plot classified image
+plotRGB(imgClass$RGB) # plot classified image in RGB format
+```
+
+<img src="man/figures/README-color_classification_example-1.png" width="100%" />
+
+Perform PCA on images:
+
+``` r
+
+## basic example code
+imgPCA12 <-  imagePCA(imgTransList, PCx = 1, PCy = 2, scale = F, plot.eigen = F, plot.PCA = F,interpolate = 5, plot.names = F, plot.images = F, plot.tree = NULL, type = "RGB" , as.RGB = F)
+```
+
+Plot image PCA along with a tree:
+
+``` r
+regcols <- setNames(rep(viridis::inferno(5))[as.factor(dataset$region)], dataset$sample)
+
+imagePCA.plot(imgPCA12, tree = tree, plot.tree = "integrated", plot.images = F, colPCA = regcols, coltree = regcols)
+```
+
+<img src="man/figures/README-plot_PCA_example-1.png" width="100%" />

@@ -12,7 +12,7 @@ boxlabel(
   cex = 1,
   bg = "transparent",
   offset = 0.5,
-  border = NULL,
+  border = "transparent",
   text.col = NULL,
   alpha = 1
 )
@@ -39,7 +39,7 @@ boxlabel(
 \item{alpha}{transparency}
 }
 \value{
-The output from \code{\link{print}}
+The output from \code{\link{boxlabel}}
 }
 \description{
 Create boxlabel

@@ -12,7 +12,7 @@ getAncestors(tree, x)
 \item{x}{tip number}
 }
 \value{
-The output from \code{\link{print}}
+The output from \code{\link{getAncestors}}
 }
 \description{
 Get ancestors

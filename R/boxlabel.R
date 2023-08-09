@@ -11,9 +11,10 @@
 #' @param text.col text color
 #' @param alpha transparency
 #'
-#' @return The output from \code{\link{print}}
+#' @return The output from \code{\link{boxlabel}}
 #' @export
-#' @import scales
+#' @importFrom scales alpha
+#' @importFrom graphics strwidth strheight rect text
 #' @examples
 #' plot.new()
 #' boxlabel(1, 1, "test1")
@@ -22,16 +23,15 @@
 #' boxlabel(10, 20, "test2", length = 5, bg = "black", text.col = "blue", alpha = 0.5)
 #' }
 #'
-boxlabel<-function(x,y, text, length = NULL,cex=1,bg="transparent",offset=0.5, border = NULL, text.col = NULL, alpha = 1){
+boxlabel<-function(x,y, text, length = NULL, cex=1, bg ="transparent", offset=0.5,
+                   border = "transparent", text.col = NULL, alpha = 1){
 
   w<-graphics::strwidth(text)*cex*1
   h<-graphics::strheight(text)*cex*1.4
-  if (is.null(border)){
-    border = scales::alpha(bg, alpha*0.5)
-  }
+
   if(is.null(length)){
     graphics::rect(x,y-0.5*h,x+w+graphics::strwidth("W"),y+0.5*h,col="white",border="white")
-    graphics::rect(x,y-0.5*h,x+w+graphics::strwidth("W"),y+0.5*h,col= scales::alpha(bg, alpha),border=border)
+    graphics::rect(x,y-0.5*h,x+w+graphics::strwidth("W"),y+0.5*h,col= scales::alpha(bg, alpha), border=border)
   } else {
     graphics::rect(x,y-0.5*h,x+length,y+0.5*h,col="white",border="white")
     graphics::rect(x,y-0.5*h,x+length,y+0.5*h,col= scales::alpha(bg, alpha),border=border)
@@ -39,8 +39,8 @@ boxlabel<-function(x,y, text, length = NULL,cex=1,bg="transparent",offset=0.5, b
   luma <- check.luma(bg)
   if(is.null(text.col)){
     if(luma < 100){ text.col = "white"} else { text.col = "black"}
-    text(x,y,text,pos=4,offset=offset,font=3, col = text.col, cex = cex)
+    graphics::text(x,y,text,pos=4,offset=offset,font=3, col = text.col, cex = cex)
   } else {
-    text(x,y,text,pos=4,offset=offset,font=3, col = text.col, cex = cex)
+    graphics::text(x,y,text,pos=4,offset=offset,font=3, col = text.col, cex = cex)
   }
 }

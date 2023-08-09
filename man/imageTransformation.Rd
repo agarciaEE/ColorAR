@@ -69,16 +69,20 @@ imageTransformation(
 \item{plot}{If "compare", plots original image vs transformed. If "result", plot restuling transformed image. Default = FALSE}
 }
 \value{
-The output from \code{\link{print}}
+The output from \code{\link{imageTransformation}}
 }
 \description{
 Process images to align using procrustes analyses based on landmarks and remove background
 }
 \examples{
-tree <- ape::rtree(26, tip.label = letters[1:26])
-X <- data.frame(trait1 = runif(26, -10, 10), trait2 = runif(26, -25, 25))
-plotPhylomorphospace(tree, X)
-\dontrun{
-plotPhylomorphospace(tree, X, palette = rainbow(6), col.branches = T)
-}
+library(ColorAR)
+data(imageList)
+data(landmarkList)
+lndmks_2drop  = c(2, 7, 28, 29)
+imgTransList = imageTransformation(imageList[1:5], landmarkList[1:5], adjustCoords = T, transformRef = "meanshape", drop = lndmks_2drop,
+crop = FALSE, cropOffset = c(0, 0, 0, 0), res = 300, keep.ASP  = T,
+removebg.by = "landmarks", smooth = 1, rescale = T,
+transformType = "tps", focal = F, sigma = 3, interpolate =  5,
+plot = "compare")
+
 }

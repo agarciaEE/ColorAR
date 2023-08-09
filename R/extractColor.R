@@ -15,15 +15,19 @@
 #' @param interpolate Integer. Image interpolation to reduce NA values created by image transformation. Default = NULL.
 #' @param output type of output desired. If 'value', gives the proportion of the target color relative to the rest of color of the image. If 'image' gives a raster with values from 0 or 1 whether the target color is present in the image.
 #'
-#' @return The output from \code{\link{print}}
+#' @return The output from \code{\link{extractColor}}
 #' @export
-#' @import smoothr sp raster Morpho patternize
+#' @importFrom raster extent crop raster focal stack crs resample focalWeight as.array values
+#' @importFrom patternize redRes
+#' @importFrom sp disaggregate
 #' @examples
-#' tree <- ape::rtree(26, tip.label = letters[1:26])
-#' X <- data.frame(trait1 = runif(26, -10, 10), trait2 = runif(26, -25, 25))
-#' plotPhylomorphospace(tree, X)
+#' img <- imgTransList[[1]]
+#' targetColor <- c(255, 165, 0)
+#' Orange_proportion <- extractColor(img, targetColor)
 #' \dontrun{
-#' plotPhylomorphospace(tree, X, palette = rainbow(6), col.branches = T)
+#' img <- imgTransList[[2]]
+#' targetColor <- c(255, 255, 255)
+#' White_proportion <- extractColor(img, targetColor)
 #' }
 extractColor <-  function(image, RGB,  resampleFactor = NULL, crop = F,  cropOffset = c(0, 0, 0, 0),
                           focal = F, sigma = 3, colOffset =NULL, plot = F, interpolate = NULL, output = c("both", "value", "image")){
@@ -31,18 +35,18 @@ extractColor <-  function(image, RGB,  resampleFactor = NULL, crop = F,  cropOff
   output = output[1]
   out = list()
   extRasterOr <- raster::extent(image)
-  if(is.null(colOffset)){    colOffset <-  colOffset(image, RGB)}
+  if(is.null(colOffset)){ colOffset <- colOffset(image, RGB)}
   if (!is.null(resampleFactor)) {
-    image <- redRes(image, resampleFactor)
+    image <- patternize::redRes(image, resampleFactor)
   }
   if (crop) {
     imageC <- raster::crop(image, cropOffset)
     y <- raster::raster(ncol = dim(image)[2], nrow = dim(image)[1])
-    extent(y) <- extRasterOr
-    image <- resample(imageC, y)
+    raster::extent(y) <- extRasterOr
+    image <- raster::resample(imageC, y)
   }
   if (focal) {
-    gf <- focalWeight(image, sigma, "Gauss")
+    gf <- raster::focalWeight(image, sigma, "Gauss")
     rrr1 <- raster::focal(image[[1]], gf)
     rrr2 <- raster::focal(image[[2]], gf)
     rrr3 <- raster::focal(image[[3]], gf)
@@ -50,9 +54,9 @@ extractColor <-  function(image, RGB,  resampleFactor = NULL, crop = F,  cropOff
   }
   if (is.numeric(interpolate)){
     rRe <- raster::raster(nrow=dim(image)[1],ncol=dim(image)[2])
-    crs(rRe) = crs(image)
+    raster::crs(rRe) = raster::crs(image)
     raster::extent(rRe) <-  extent(image)
-    image = disaggregate(image, fact = interpolate, method = "bilinear")
+    image = sp::disaggregate(image, fact = interpolate, method = "bilinear")
     image = raster::resample(image, rRe, method = "ngb")
   }
   map <- apply(raster::as.array(image), 1:2, function(x) all(abs(x - RGB) < colOffset * 255))
@@ -67,7 +71,7 @@ extractColor <-  function(image, RGB,  resampleFactor = NULL, crop = F,  cropOff
     plot(mapR, box = F, axes = F)
   }
   if(output %in% c("value", "both")) {
-    out$P <- sum(values(mapR) != 0, na.rm = T)/sum(!is.na(values(mapR)))
+    out$P <- sum(raster::values(mapR) != 0, na.rm = T)/sum(!is.na(raster::values(mapR)))
   }
   if(output %in% c("image", "both")) {
     out$ras <- mapR

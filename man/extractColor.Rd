@@ -42,16 +42,18 @@ extractColor(
 \item{output}{type of output desired. If 'value', gives the proportion of the target color relative to the rest of color of the image. If 'image' gives a raster with values from 0 or 1 whether the target color is present in the image.}
 }
 \value{
-The output from \code{\link{print}}
+The output from \code{\link{extractColor}}
 }
 \description{
 Extract color and compute color proportion
 }
 \examples{
-tree <- ape::rtree(26, tip.label = letters[1:26])
-X <- data.frame(trait1 = runif(26, -10, 10), trait2 = runif(26, -25, 25))
-plotPhylomorphospace(tree, X)
+img <- imgTransList[[1]]
+targetColor <- c(255, 165, 0)
+Orange_proportion <- extractColor(img, targetColor)
 \dontrun{
-plotPhylomorphospace(tree, X, palette = rainbow(6), col.branches = T)
+img <- imgTransList[[2]]
+targetColor <- c(255, 255, 255)
+White_proportion <- extractColor(img, targetColor)
 }
 }

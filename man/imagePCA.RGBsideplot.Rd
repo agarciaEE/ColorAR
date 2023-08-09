@@ -20,10 +20,8 @@ The output from \code{\link{print}}
 makes the RGB reconstruction side plot of imagePCA.plot function
 }
 \examples{
-tree <- ape::rtree(26, tip.label = letters[1:26])
-X <- data.frame(trait1 = runif(26, -10, 10), trait2 = runif(26, -25, 25))
-plotPhylomorphospace(tree, X)
-\dontrun{
-plotPhylomorphospace(tree, X, palette = rainbow(6), col.branches = T)
-}
+library(ColorAR)
+data(imgPCA12)
+sideplot <- imagePCA.RGBsideplot(imgPCA12)
+
 }

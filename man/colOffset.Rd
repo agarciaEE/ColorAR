@@ -14,7 +14,7 @@ colOffset(image, RGB, min = 0.1)
 \item{min}{Minimum offset}
 }
 \value{
-The output from \code{\link{print}}
+The output from \code{\link{colOffset}}
 }
 \description{
 estimate best color offset for classifying colors into categories

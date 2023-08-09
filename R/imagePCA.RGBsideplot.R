@@ -7,23 +7,25 @@
 #'
 #' @return The output from \code{\link{print}}
 #' @export
-#' @import stats raster shape
+#' @importFrom stats quantile dnorm
+#' @importFrom raster mean stack
+#' @importFrom shape Arrows
+#' @importFrom graphics text
+#'
 #' @examples
-#' tree <- ape::rtree(26, tip.label = letters[1:26])
-#' X <- data.frame(trait1 = runif(26, -10, 10), trait2 = runif(26, -25, 25))
-#' plotPhylomorphospace(tree, X)
-#' \dontrun{
-#' plotPhylomorphospace(tree, X, palette = rainbow(6), col.branches = T)
-#' }
+#' library(ColorAR)
+#' data(imgPCA12)
+#' sideplot <- imagePCA.RGBsideplot(imgPCA12)
+#'
 imagePCA.RGBsideplot <- function(x, q = 0.75, plot = T){
 
   PCx <- x$components[1]
   PCy <- x$components[2]
 
   # get mean image (center)
-  mean.image <- stack(mean(raster::stack(lapply(x$images, function(i) i[[1]])), na.rm = T),
-                      mean(raster::stack(lapply(x$images, function(i) i[[2]])), na.rm = T),
-                      mean(raster::stack(lapply(x$images, function(i) i[[3]])), na.rm = T))
+  mean.image <- raster::stack(raster::mean(raster::stack(lapply(x$images, function(i) i[[1]])), na.rm = T),
+                              raster::mean(raster::stack(lapply(x$images, function(i) i[[2]])), na.rm = T),
+                              raster::mean(raster::stack(lapply(x$images, function(i) i[[3]])), na.rm = T))
 
   # get PC threshold to find representatives
   th.minPCx <- stats::quantile(x$df[x$df[,PCx] < 0,1], q)
@@ -63,21 +65,21 @@ imagePCA.RGBsideplot <- function(x, q = 0.75, plot = T){
   maxPCy.names <- rep(maxPCy.names, times = maxPCy_reps)
 
   # get mean image of representatives
-  mean.minPCx <- raster::stack(mean(raster::stack(lapply(x$images[minPCx.names], function(i) i[[1]])), na.rm = T),
-                       mean(raster::stack(lapply(x$images[minPCx.names], function(i) i[[2]])), na.rm = T),
-                       mean(raster::stack(lapply(x$images[minPCx.names], function(i) i[[3]])), na.rm = T))
+  mean.minPCx <- raster::stack(raster::mean(raster::stack(lapply(x$images[minPCx.names], function(i) i[[1]])), na.rm = T),
+                               raster::mean(raster::stack(lapply(x$images[minPCx.names], function(i) i[[2]])), na.rm = T),
+                               raster::mean(raster::stack(lapply(x$images[minPCx.names], function(i) i[[3]])), na.rm = T))
 
-  mean.maxPCx <- raster::stack(mean(raster::stack(lapply(x$images[maxPCx.names], function(i) i[[1]])), na.rm = T),
-                       mean(raster::stack(lapply(x$images[maxPCx.names], function(i) i[[2]])), na.rm = T),
-                       mean(raster::stack(lapply(x$images[maxPCx.names], function(i) i[[3]])), na.rm = T))
+  mean.maxPCx <- raster::stack(raster::mean(raster::stack(lapply(x$images[maxPCx.names], function(i) i[[1]])), na.rm = T),
+                               raster::mean(raster::stack(lapply(x$images[maxPCx.names], function(i) i[[2]])), na.rm = T),
+                               raster::mean(raster::stack(lapply(x$images[maxPCx.names], function(i) i[[3]])), na.rm = T))
 
-  mean.minPCy <- raster::stack(mean(raster::stack(lapply(x$images[minPCy.names], function(i) i[[1]])), na.rm = T),
-                       mean(raster::stack(lapply(x$images[minPCy.names], function(i) i[[2]])), na.rm = T),
-                       mean(raster::stack(lapply(x$images[minPCy.names], function(i) i[[3]])), na.rm = T))
+  mean.minPCy <- raster::stack(raster::mean(raster::stack(lapply(x$images[minPCy.names], function(i) i[[1]])), na.rm = T),
+                               raster::mean(raster::stack(lapply(x$images[minPCy.names], function(i) i[[2]])), na.rm = T),
+                               raster::mean(raster::stack(lapply(x$images[minPCy.names], function(i) i[[3]])), na.rm = T))
 
-  mean.maxPCy <- raster::stack(mean(raster::stack(lapply(x$images[maxPCy.names], function(i) i[[1]])), na.rm = T),
-                       mean(raster::stack(lapply(x$images[maxPCy.names], function(i) i[[2]])), na.rm = T),
-                       mean(raster::stack(lapply(x$images[maxPCy.names], function(i) i[[3]])), na.rm = T))
+  mean.maxPCy <- raster::stack(raster::mean(raster::stack(lapply(x$images[maxPCy.names], function(i) i[[1]])), na.rm = T),
+                               raster::mean(raster::stack(lapply(x$images[maxPCy.names], function(i) i[[2]])), na.rm = T),
+                               raster::mean(raster::stack(lapply(x$images[maxPCy.names], function(i) i[[3]])), na.rm = T))
 
   # make mapList object
   mapList <- c(mean.image, mean.minPCx, mean.maxPCx, mean.minPCy, mean.maxPCy)
@@ -90,8 +92,11 @@ imagePCA.RGBsideplot <- function(x, q = 0.75, plot = T){
     shape::Arrows(-1, 0, 1, 0, code = 3, lwd =2, arr.type = "triangle")
     plotImages(c(0,-1.5, 1.5, 0, 0), c(0,0, 0, -1.5, 1.5), mapList,
                 width = c(0.1*4, rep(0.1*2,4)),  interpolate = T,
-                names = c("", paste0("min", PCx), paste0("max", PCx), paste0("min", PCy), paste0("max", PCy)),
+                names = NULL,
                 pos = c(1, 2,  4,  1,  3))
+    graphics::text(c(0,-1.3, 1.3, 0, 0), c(0, -0.5, -0.5, -1.9, 1.9),
+                   c("", paste0("min", PCx), paste0("max", PCx), paste0("min", PCy), paste0("max", PCy)),
+                   pos = c(1, 2,  4,  1,  3))
   }
   return(mapList)
 }

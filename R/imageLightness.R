@@ -5,18 +5,20 @@
 #' @param image RGB raster image
 #' @param output type of output desired. If 'value', gives the average perceived lightness of the image. If 'raster' gives a raster with values from 0 to 1 with the perceived lightness value.
 #'
-#' @return The output from \code{\link{print}}
+#' @return The output from \code{\link{imageLightness}}
 #' @export
-#' @import raster stats
+#' @importFrom raster as.data.frame
+#' @importFrom stats na.exclude
 #' @examples
-#' tree <- ape::rtree(26, tip.label = letters[1:26])
-#' X <- data.frame(trait1 = runif(26, -10, 10), trait2 = runif(26, -25, 25))
-#' plotPhylomorphospace(tree, X)
+#' img <- imgTransList[[1]]
+#' imgLightness <- imageLightness(img)
 #' \dontrun{
-#' plotPhylomorphospace(tree, X, palette = rainbow(6), col.branches = T)
+#' img <- imgTransList[[2]]
+#' imgLightness <- imageLightness(img)
 #' }
 imageLightness <-  function(image, output = c("value", "raster", "both")) {
 
+  output <- output[1]
   if (output != "raster"){
     df <- stats::na.exclude(raster::as.data.frame(image/255))
     ldf = t(apply(df, 1, function(i) sapply(1:3, function(j) if (i[j] <= 0.04045) { i[j]/12.92} else { ((i[j] + 0.055)/1.055)^2.4})))

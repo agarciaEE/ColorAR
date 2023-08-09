@@ -78,16 +78,18 @@ imagePCA.plot(
 \item{cols}{vector of colors used for visualize color changes. Default = c("red", "white", "blue")}
 }
 \value{
-The output from \code{\link{print}}
+The output from \code{\link{imagePCA.plot}}
 }
 \description{
 plot imagePCA object with standard 2-D PCA axis
 }
 \examples{
-tree <- ape::rtree(26, tip.label = letters[1:26])
-X <- data.frame(trait1 = runif(26, -10, 10), trait2 = runif(26, -25, 25))
-plotPhylomorphospace(tree, X)
+color.list <- viridis::viridis(5)
+col_region <- setNames(rep(color.list)[as.factor(dataset$region)], dataset$sample)
+col_region_legend <- setNames(rep(color.list)[as.factor(levels(as.factor(dataset$region)))], levels(as.factor(dataset$region)))
+imagePCA.plot(imgPCA12,  tree = tree, plot.tree = "side",
+              plot.images = F, cex = 1, plot.names = T, colPCA = col_region, legend = col_region_legend)
 \dontrun{
-plotPhylomorphospace(tree, X, palette = rainbow(6), col.branches = T)
+imagePCA.plot(imgPCA12, tree = tree, plot.tree = "integrated", plot.images = F)
 }
 }

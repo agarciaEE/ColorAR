@@ -4,15 +4,20 @@
 #'
 #' @param image RGB raster image
 #'
-#' @return The output from \code{\link{print}}
+#' @return The output from \code{\link{imageDarkness}}
 #' @export
-#' @import smoothr sp raster Morpho patternize
+#' @importFrom raster as.data.frame
+#' @importFrom stats na.exclude
 #' @examples
-#' tree <- ape::rtree(26, tip.label = letters[1:26])
-#' X <- data.frame(trait1 = runif(26, -10, 10), trait2 = runif(26, -25, 25))
-#' plotPhylomorphospace(tree, X)
+#' libary(ColorAR)
+#' data(imgTransList)
+#' img <- imgTransList[[1]]
+#' imgDarkness <- imageDarkness(img)
 #' \dontrun{
-#' plotPhylomorphospace(tree, X, palette = rainbow(6), col.branches = T)
+#' libary(ColorAR)
+#' data(imgTransList)
+#' img <- imgTransList[[2]]
+#' imgDarkness<- imageDarkness(img)
 #' }
 imageDarkness <- function(image){
 

@@ -7,26 +7,31 @@
 #' @param method Wheter to use RGB or decimal color format. Default is 'RGB'.
 #' @param colOffset Numeric value between 0 and 1. If NULL, colOffset will be estimated. color offset threshold to classify as target color. Default is NULL.
 #' @param output type of output desired. If 'value', gives the average color intensity  of the image. If 'raster' gives a raster with values from 0 to 1 with the intensity value.
-#' @param plot Wheather plot classyfied image or not. Default is TRUE
+#' @param plot Wheather plot classyfied image or not. Default is FALSE
 #'
-#' @return The output from \code{\link{print}}
+#' @return The output from \code{\link{extractIntensity}}
 #' @export
-#' @import stats raster
+#' @importFrom stats na.exclude density
+#' @importFrom raster as.data.frame stack maxValue
 #' @examples
-#' tree <- ape::rtree(26, tip.label = letters[1:26])
-#' X <- data.frame(trait1 = runif(26, -10, 10), trait2 = runif(26, -25, 25))
-#' plotPhylomorphospace(tree, X)
+#' img <- imgTransList[[1]]
+#' targetColor <- c(255, 165, 0)
+#' Orange_intensity <- extractIntensity(img, targetColor)
 #' \dontrun{
-#' plotPhylomorphospace(tree, X, palette = rainbow(6), col.branches = T)
+#' img <- imgTransList[[2]]
+#' targetColor <- c(255, 255, 255)
+#' White_intensity<- extractIntensity(img, targetColor)
 #' }
-extractIntensity <- function(image, RGB = c(0,0,0), method = c("RGB", "dec"), colOffset = NULL, output = c("both", "value", "raster"), plot = T){
+extractIntensity <- function(image, RGB = c(0,0,0), method = c("RGB", "dec"),
+                             colOffset = NULL, output = c("both", "value", "raster"), plot = F){
 
-  method = method[1]
+  method <-  method[1]
+  output <- output[1]
   if(is.null(colOffset)){
     colOffset <- colOffset(image, RGB)
   }
   if (output != "raster"){
-    df <- na.exclude(raster::as.data.frame(image)) # get the RGB color codes
+    df <- stats::na.exclude(raster::as.data.frame(image)) # get the RGB color codes
     if(method == "RGB"){
       range <- c(0,255*colOffset)
       check <- sum(duplicated(rbind(unique(df), RGB)))
@@ -43,7 +48,7 @@ extractIntensity <- function(image, RGB = c(0,0,0), method = c("RGB", "dec"), co
       idx <- lapply(1:3, function(i) which(d[[i]]$x >= range[1] & d[[i]]$x <= range[2])) # keep only values within color range (0-255)
       y <- lapply(1:3, function(i) d[[i]]$y[idx[[i]]]/sum(d[[i]]$y)) # compute relative densities
       x <- lapply(1:3, function(i) 1-(d[[i]]$x[idx[[i]]]/range[2])) # assign weight coefficient based on distances from target color
-      I = mean(sapply(1:3, function(i) sum(y[[i]]*x[[i]]))) # compute mean of RGB color intensity estimates
+      I <- mean(sapply(1:3, function(i) sum(y[[i]]*x[[i]]))) # compute mean of RGB color intensity estimates
     }
     if (method == "dec"){
       range <- c(0,256^3*colOffset)
@@ -61,7 +66,7 @@ extractIntensity <- function(image, RGB = c(0,0,0), method = c("RGB", "dec"), co
       idx <- which(d$x >= range[1] & d$x <= range[2]) # keep only values within color offset (0-255)
       y <- d$y[idx]/sum(d$y) # compute relative densities
       x <- 1-(d$x[idx]/range[2]) # assign weight coefficient based on distances from target color
-      I = sum(y*x)
+      I <- sum(y*x)
     }
   }
   if (output != "value"){
@@ -72,8 +77,8 @@ extractIntensity <- function(image, RGB = c(0,0,0), method = c("RGB", "dec"), co
         ras[[i]][ras[[i]] > range[2]] = NA
         ras[[i]] <- 1 - ras[[i]]^2 / range[2]^2
       }
-      ras <- sum(stack(ras), na.rm = T)
-      ras <- ras/maxValue(ras)
+      ras <- sum(raster::stack(ras), na.rm = T)
+      ras <- ras/raster::maxValue(ras)
     }
     if (method == "dec"){
       range <- c(0,256^3*colOffset^3)
@@ -82,7 +87,6 @@ extractIntensity <- function(image, RGB = c(0,0,0), method = c("RGB", "dec"), co
       ras <- abs(ras - RGBdec)
       #ras[ras > range[2]] = NA
       ras <- 1 - ras^(1/3) / range[2]^(1/3)
-      if(plot){ plot(ras)}
     }
     if(plot){ plot(ras)}
   }

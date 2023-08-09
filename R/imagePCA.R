@@ -28,16 +28,18 @@
 #' @param coltree vector of k colors with length of n tips of the given tree. If NULL, coltree will match colPCA. Default is NULL.
 #' @param palette palette of brewer.pal colors to use. If NULL and colPCA = NULL, viridis palette will be used. Default NULL.
 #'
-#' @return The output from \code{\link{print}}
+#' @return The output from \code{\link{imagePCA}}
 #' @export
-#' @import stats raster graphics scales
+#' @importFrom stats na.exclude
+#' @importFrom raster nrow ncol extent raster resample as.data.frame stack mean
+#' @importFrom sp disaggregate
+#'
 #' @examples
-#' tree <- ape::rtree(26, tip.label = letters[1:26])
-#' X <- data.frame(trait1 = runif(26, -10, 10), trait2 = runif(26, -25, 25))
-#' plotPhylomorphospace(tree, X)
-#' \dontrun{
-#' plotPhylomorphospace(tree, X, palette = rainbow(6), col.branches = T)
-#' }
+#' library(ColorAR)
+#' data(imgTransList)
+#' imgPCA12 <-  imagePCA(imgTransList, PCx = 1, PCy = 2, scale = F, plot.eigen = F, plot.PCA = F,
+#'                         interpolate = 5, plot.names = F, plot.images = F, plot.tree = NULL, type = "RGB" , as.RGB = F)
+#'
 imagePCA <- function(imgList, res = NULL, tree = NULL, groups = NULL, plot.eigen = T, plot.PCA = T, plot.tree = "integrated",
                      node.width = 0.5, col.branches = F, node.pch = 18, size = 0.1, fill.NAs = F,
                      PCx = 1, PCy = 2, plot.names = T, plot.images = TRUE, interpolate = NULL,  cex = 1, type = c("RGB", "decimal", "raster"), as.RGB = F,
@@ -55,11 +57,13 @@ imagePCA <- function(imgList, res = NULL, tree = NULL, groups = NULL, plot.eigen
   }
   for (n in 1:length(imgList)) {
     r = imgList[[n]]
+    NR <- raster::nrow(r)
+    NC <- raster::ncol(r)
     if (is.integer(interpolate)) {
-      ras = as.vector(extent(r))
-      rRe <- raster::raster(nrow=nrow(r),ncol=ncol(r))
+      ras = as.vector(raster::extent(r))
+      rRe <- raster::raster(nrow=NR,ncol=NC)
       raster::extent(rRe) <- ras
-      r = raster::disaggregate(r, fact = interpolate, method = "bilinear")
+      r = sp::disaggregate(r, fact = interpolate, method = "bilinear")
       r = raster::resample(r, rRe, method = "ngb")
     }
     if(!is.null(res)){
@@ -93,9 +97,9 @@ imagePCA <- function(imgList, res = NULL, tree = NULL, groups = NULL, plot.eigen
   }
   colnames(rasDF) = names(imgList)
   if (fill.NAs){
-    mean_img <- raster::stack(mean(raster::stack(lapply(imgList, function(i) i[[1]])), na.rm = T),
-                      mean(raster::stack(lapply(imgList, function(i) i[[2]])), na.rm = T),
-                      mean(raster::stack(lapply(imgList, function(i) i[[3]])), na.rm = T))
+    mean_img <- raster::stack(raster::mean(raster::stack(lapply(imgList, function(i) i[[1]])), na.rm = T),
+                      raster::mean(raster::stack(lapply(imgList, function(i) i[[2]])), na.rm = T),
+                      raster::mean(raster::stack(lapply(imgList, function(i) i[[3]])), na.rm = T))
     if(type == "RGB"){
       mean_img_df <- raster::as.data.frame(as.vector(r))
     } else {
@@ -105,7 +109,7 @@ imagePCA <- function(imgList, res = NULL, tree = NULL, groups = NULL, plot.eigen
     NA.cells <- which(is.na(rs) & !is.na(mean_img_df))
     rasDF[NA.cells, ] <- mean_img_df[NA.cells, ]
   }
-  rasDF = na.exclude(rasDF)
+  rasDF = stats::na.exclude(rasDF)
   rw.val = rownames(rasDF)
   df = t(rasDF)
   comp <- stats::prcomp(df, scale. = scale)
@@ -139,11 +143,11 @@ imagePCA <- function(imgList, res = NULL, tree = NULL, groups = NULL, plot.eigen
     rw.val <- rw.val[1:n]
     center <- lapply(1:3, function(i) comp$center[(n*i-n+1):(n*i)])
     rotation <- lapply(1:3, function(i) rotation[(n*i-n+1):(n*i),])
-    xMi <- lapply(1:3, function(i) rep(NA, ncol(r)*nrow(r)))
-    xMa <- lapply(1:3, function(i) rep(NA, ncol(r)*nrow(r)))
-    xCt <- lapply(1:3, function(i) rep(NA, ncol(r)*nrow(r)))
-    yMi <- lapply(1:3, function(i) rep(NA, ncol(r)*nrow(r)))
-    yMa <- lapply(1:3, function(i) rep(NA, ncol(r)*nrow(r)))
+    xMi <- lapply(1:3, function(i) rep(NA, NC*NR))
+    xMa <- lapply(1:3, function(i) rep(NA, NC*NR))
+    xCt <- lapply(1:3, function(i) rep(NA, NC*NR))
+    yMi <- lapply(1:3, function(i) rep(NA, NC*NR))
+    yMa <- lapply(1:3, function(i) rep(NA, NC*NR))
     if(as.RGB){
       for (i in 1:3){
         xCt[[i]][as.numeric(rw.val)] = scales::rescale(center[[i]], to = c(0,255))
@@ -162,18 +166,18 @@ imagePCA <- function(imgList, res = NULL, tree = NULL, groups = NULL, plot.eigen
         yMa[[i]][as.numeric(rw.val)] = scales::rescale(as.vector(pc.vecMay %*% t(rotation[[i]])), to = c(-1,1))
       }
     }
-    mapc <- stack(sapply(1:3, function(i) raster::raster(t(matrix(xCt[[i]], ncol = nrow(r),
-                                                                  nrow = ncol(r))))))
-    #mapc <- stack(sapply(1:3, function(x) mean(stack(sapply(imgList, function(i) i[[x]])), na.rm = T)))
+    mapc <- raster::stack(sapply(1:3, function(i) raster::raster(t(matrix(xCt[[i]], ncol = NR,
+                                                                  nrow = NC)))))
+    #mapc <- raster::stack(sapply(1:3, function(x) raster::mean(raster::stack(sapply(imgList, function(i) i[[x]])), na.rm = T)))
 
-    mapMix <- stack(sapply(1:3, function(i) raster::raster(t(matrix(xMi[[i]], ncol = nrow(r),
-                                                                    nrow = ncol(r))))))
-    mapMax <- stack(sapply(1:3, function(i) raster::raster(t(matrix(xMa[[i]], ncol = nrow(r),
-                                                                    nrow = ncol(r))))))
-    mapMiy <- stack(sapply(1:3, function(i) raster::raster(t(matrix(yMi[[i]], ncol = nrow(r),
-                                                                    nrow = ncol(r))))))
-    mapMay <- stack(sapply(1:3, function(i) raster::raster(t(matrix(yMa[[i]], ncol = nrow(r),
-                                                                    nrow = ncol(r))))))
+    mapMix <- raster::stack(sapply(1:3, function(i) raster::raster(t(matrix(xMi[[i]], ncol = NR,
+                                                                    nrow = NC)))))
+    mapMax <- raster::stack(sapply(1:3, function(i) raster::raster(t(matrix(xMa[[i]], ncol = NR,
+                                                                    nrow = NC)))))
+    mapMiy <- raster::stack(sapply(1:3, function(i) raster::raster(t(matrix(yMi[[i]], ncol = NR,
+                                                                    nrow = NC)))))
+    mapMay <- raster::stack(sapply(1:3, function(i) raster::raster(t(matrix(yMa[[i]], ncol = NR,
+                                                                    nrow = NC)))))
     mapList <- list(mapc, mapMix, mapMax, mapMiy, mapMay)
     names(mapList) <- c("center", paste0("minPC",PCx),  paste0("maxPC",PCx),  paste0("minPC",PCy),  paste0("maxPC",PCy))
     if(!as.RGB){
@@ -187,26 +191,26 @@ imagePCA <- function(imgList, res = NULL, tree = NULL, groups = NULL, plot.eigen
   }
   else{
     as.RGB = F
-    xMi <- rep(NA, ncol(r)*nrow(r))
-    xMa <- rep(NA, ncol(r)*nrow(r))
-    xCt = rep(NA, ncol(r)*nrow(r))
+    xMi <- rep(NA, NC*NR)
+    xMa <- rep(NA, NC*NR)
+    xCt = rep(NA, NC*NR)
     xCt[as.numeric(rw.val)] = comp$center
     xMi[as.numeric(rw.val)] = as.vector(pc.vecMix %*% t(rotation))
     xMa[as.numeric(rw.val)] = as.vector(pc.vecMax %*% t(rotation))
-    x2c <- t(matrix(xCt, ncol = nrow(r),
-                    nrow = ncol(r)))
-    x2Mi <- t(matrix(xMi, ncol = nrow(r),
-                     nrow = ncol(r)))
-    x2Ma<- t(matrix(xMa, ncol = nrow(r),
-                    nrow = ncol(r)))
-    yMi <- rep(NA, ncol(r)*nrow(r))
-    yMa <- rep(NA, ncol(r)*nrow(r))
+    x2c <- t(matrix(xCt, ncol = NR,
+                    nrow = NC))
+    x2Mi <- t(matrix(xMi, ncol = NR,
+                     nrow = NC))
+    x2Ma<- t(matrix(xMa, ncol = NR,
+                    nrow = NC))
+    yMi <- rep(NA, NC*NR)
+    yMa <- rep(NA, NC*NR)
     yMi[as.numeric(rw.val)] = as.vector(pc.vecMiy %*% t(rotation))
     yMa[as.numeric(rw.val)] = as.vector(pc.vecMay %*% t(rotation))
-    y2Mi <- t(matrix(yMi, ncol = nrow(r),
-                     nrow = ncol(r)))
-    y2Ma <- t(matrix(yMa, ncol = nrow(r),
-                     nrow = ncol(r)))
+    y2Mi <- t(matrix(yMi, ncol = NR,
+                     nrow = NC))
+    y2Ma <- t(matrix(yMa, ncol = NR,
+                     nrow = NC))
     mapc <- raster::raster(x2c)
     mapMix <- raster::raster(x2Mi)
     mapMax <- raster::raster(x2Ma)
@@ -218,14 +222,14 @@ imagePCA <- function(imgList, res = NULL, tree = NULL, groups = NULL, plot.eigen
   }
   if (!is.null(groups)){
     df <- aggregateGroups(comp, groups, PCx = PCx, PCy = PCy, scale = scale)
-    imgList <-  sapply(unique(groups), function(g) raster::stack(mean(raster::stack(lapply(imgList[which(groups == g)], function(i) i[[1]])), na.rm = T),
+    imgList <-  sapply(unique(groups), function(g) raster::stack(raster::mean(raster::stack(lapply(imgList[which(groups == g)], function(i) i[[1]])), na.rm = T),
                                              mean(raster::stack(lapply(imgList[which(groups == g)], function(i) i[[2]])), na.rm = T),
                                              mean(raster::stack(lapply(imgList[which(groups == g)], function(i) i[[3]])), na.rm = T)))
   } else {
     df <- pcdata[,c(PCx, PCy)]
   }
   out$images = imgList
-  out$df = df
+  out$df = as.data.frame(df)
   out$pca = comp
   out$cellIDs = rw.val # images cell IDs used on PCA
   out$ras = mapList

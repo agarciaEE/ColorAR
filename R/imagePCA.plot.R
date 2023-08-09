@@ -26,15 +26,24 @@
 #' @param size size of the images to display on the PCA plot
 #' @param cols vector of colors used for visualize color changes. Default = c("red", "white", "blue")
 #'
-#' @return The output from \code{\link{print}}
+#' @return The output from \code{\link{imagePCA.plot}}
 #' @export
-#' @import stats raster viridis RColorBrewer grDevices graphics scales shape
+#' @importFrom raster nlayers plot
+#' @importFrom viridis viridis
+#' @importFrom RColorBrewer brewer.pal
+#' @importFrom grDevices colorRampPalette
+#' @importFrom graphics legend text
+#' @importFrom scales alpha
+#' @importFrom shape Arrows
+#'
 #' @examples
-#' tree <- ape::rtree(26, tip.label = letters[1:26])
-#' X <- data.frame(trait1 = runif(26, -10, 10), trait2 = runif(26, -25, 25))
-#' plotPhylomorphospace(tree, X)
+#' color.list <- viridis::viridis(5)
+#' col_region <- setNames(rep(color.list)[as.factor(dataset$region)], dataset$sample)
+#' col_region_legend <- setNames(rep(color.list)[as.factor(levels(as.factor(dataset$region)))], levels(as.factor(dataset$region)))
+#' imagePCA.plot(imgPCA12,  tree = tree, plot.tree = "side",
+#'               plot.images = F, cex = 1, plot.names = T, colPCA = col_region, legend = col_region_legend)
 #' \dontrun{
-#' plotPhylomorphospace(tree, X, palette = rainbow(6), col.branches = T)
+#' imagePCA.plot(imgPCA12, tree = tree, plot.tree = "integrated", plot.images = F)
 #' }
 imagePCA.plot <-function(imgPCA, tree = NULL, plot.tree = c("side", "integrated"), onTop = F, SD = F,
                          col.branches  = F, node.width = 0.5, node.pch = 18, tree.cex = 1, names.cex = 1,
@@ -145,7 +154,7 @@ imagePCA.plot <-function(imgPCA, tree = NULL, plot.tree = c("side", "integrated"
         if (!as.RGB){
           par(mar = c(5, 5, 5, 5))
           plot(NULL, xlim=c(0,1), ylim=c(0,1), type="n", axes = FALSE, xlab = '', ylab='')
-          plot(mapList[[1]], zlim = c(-1,1), col= grDevices::colorRampPalette(cols)(n=100),  legend.only = TRUE, legend.width = 2, horizontal = TRUE,
+          raster::plot(mapList[[1]], zlim = c(-1,1), col= grDevices::colorRampPalette(cols)(n=100),  legend.only = TRUE, legend.width = 2, horizontal = TRUE,
                smallplot = c(0.3, 0.9, 0.3, 0.5), legend.args = list(text="Standardized\ndifferences", side = 3, font = 2, line = 1, cex = 1))
         }
       }
@@ -165,24 +174,16 @@ imagePCA.plot <-function(imgPCA, tree = NULL, plot.tree = c("side", "integrated"
       layout(mat)
       par(mar = c(3,3,3,3), oma = c(0,0,0,0))
       opar = par()
-      #par(fg="transparent")
       plot(tree)
       pp<-get("last_plot.phylo",envir=.PlotPhyloEnv)
       par(fg="black")
       for(i in 1:Ntip(tree)) boxlabel(pp$xx[i], pp$yy[i], tree$tip.label[i], bg=coltree[tree$tip.label[i]], cex = pp$cex, alpha = 0.8)
-      #phytools::dotTree(tree,coltree,colors=setNames(coltree,
-      #                                              coltree),ftype="i",fsize=0.7, legend = F)
       par(mar = c(5, 4, 3, 4))
       plot(pcdata[,1:2], col = colPCA[rownames(pcdata)],
            pch = 1,
            cex = 0, xlim = c(xmin, xmax), ylim = c(ymin,ymax),
            xlab = paste(PCx, " (", round(summ$importance[2,PCx] * 100, 1), " %)"),
            ylab = paste(PCy, " (", round(summ$importance[2,PCy] * 100, 1), " %)"))
-      #size1 <- (par("cin")[2]/par("pin")[1])*
-      #  (par("usr")[2] - par("usr")[1]) * 0.5 * par("cex") * 0.375
-      #size2 <- (par("cin")[2]/par("pin")[2])*
-      #  (par("usr")[4] - par("usr")[3]) * 0.5 * par("cex") * 0.375
-      #correction = sqrt(size1^2+size2^2)
       if (!onTop){
         if (SD){
           sapply(1:nrow(pcdata), function(i) segments(pcdata[i,1]-pcdata[i,3], pcdata[i,2], pcdata[i,1]+pcdata[i,3], pcdata[i,2], col = scales::alpha(colPCA[rownames(pcdata)[i]], 0.8) , lwd = 4))
@@ -220,7 +221,7 @@ imagePCA.plot <-function(imgPCA, tree = NULL, plot.tree = c("side", "integrated"
       if (!as.RGB){
         par(mar = c(5, 5, 5, 5))
         plot(NULL, xlim=c(0,1), ylim=c(0,1), type="n", axes = FALSE, xlab = '', ylab='')
-        plot(mapList[[1]], zlim = c(-1,1), col= grDevices::colorRampPalette(cols)(n=100),  legend.only = TRUE, legend.width = 2, horizontal = TRUE,
+        raster::plot(mapList[[1]], zlim = c(-1,1), col= grDevices::colorRampPalette(cols)(n=100),  legend.only = TRUE, legend.width = 2, horizontal = TRUE,
              smallplot = c(0.4, 0.9, 0.3, 0.5), legend.args = list(text="Standardized\ndifferences", side = 3, font = 2, line = 1, cex = 1))
       }
     }
@@ -254,7 +255,7 @@ imagePCA.plot <-function(imgPCA, tree = NULL, plot.tree = c("side", "integrated"
     if (!as.RGB){
       par(mar = c(5, 5, 5, 5))
       plot(NULL, xlim=c(0,1), ylim=c(0,1), type="n", axes = FALSE, xlab = '', ylab='')
-      plot(mapList[[1]], zlim = c(-1,1), col= colorRampPalette(cols)(n=100),  legend.only = TRUE, legend.width = 2, horizontal = TRUE,
+      raster::plot(mapList[[1]], zlim = c(-1,1), col= colorRampPalette(cols)(n=100),  legend.only = TRUE, legend.width = 2, horizontal = TRUE,
            smallplot = c(0.3, 0.9, 0.3, 0.5), legend.args = list(text="Standardized\ndifferences", side = 3, font = 2, line = 1, cex = 1))
     }
   }
