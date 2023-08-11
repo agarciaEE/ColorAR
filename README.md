@@ -11,6 +11,7 @@ status](https://travis-ci.com/agarciaEE/ColorAR.svg?branch=main)](https://travis
 status](https://ci.appveyor.com/api/projects/status/github/agarciaEE/ColorAR?branch=main&svg=true)](https://ci.appveyor.com/project/agarciaEE/ColorAR)
 [![Codecov test
 coverage](https://codecov.io/gh/agarciaEE/ColorAR/branch/main/graph/badge.svg)](https://app.codecov.io/gh/agarciaEE/ColorAR?branch=main)
+[![R-CMD-check](https://github.com/agarciaEE/ColorAR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/agarciaEE/ColorAR/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of ColorAR is to provide a set of functions to compute
