@@ -20,6 +20,7 @@
 #' @importFrom raster extent crop raster focal stack crs resample focalWeight as.array values
 #' @importFrom patternize redRes
 #' @importFrom sp disaggregate
+#' @importFrom graphics par
 #' @examples
 #' img <- imgTransList[[1]]
 #' targetColor <- c(255, 165, 0)
@@ -66,7 +67,7 @@ extractColor <-  function(image, RGB,  resampleFactor = NULL, crop = F,  cropOff
     plot(mapR)
   }
   if (plot == "compare") {
-    par(mfrow = c(1, 2))
+    graphics::par(mfrow = c(1, 2))
     raster::plotRGB(image)
     plot(mapR, box = F, axes = F)
   }

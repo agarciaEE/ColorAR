@@ -19,14 +19,20 @@
 #'
 #' @return The output from \code{\link{classifyColor}}
 #' @export
-#' @importFrom raster plotRGB as.array raster extent stack
+#' @importFrom raster plotRGB as.array raster extent stack plot
 #' @importFrom grDevices rgb
 #' @examples
-#' RGB = data.frame(red = c(255, 255, 0), green = c(255, 165, 0), blue = c(255, 0, 0), row.names = c("white", "orange", "black"))
-#' imgClass <- classifyColor(imgTransList[[1]], RGB = RGB, allow.admixture = TRUE, output = "both")
-#' plot(imgClass$class)
+#' RGB = data.frame(red = c(255, 255, 0),
+#'                  green = c(255, 165, 0),
+#'                  blue = c(255, 0, 0),
+#'                  row.names = c("white", "orange", "black"))
+#' imgClass <- classifyColor(imgTransList[[1]], RGB = RGB, allow.admixture = FALSE, output = "both")
+#' raster::plot(imgClass$class)
 #' \dontrun{
-#' RGB = data.frame(red = c(255, 255, 0), green = c(255, 165, 0), blue = c(255, 0, 0), row.names = c("white", "orange", "black"))
+#' RGB = data.frame(red = c(255, 255, 0),
+#'                  green = c(255, 165, 0),
+#'                  blue = c(255, 0, 0),
+#'                  row.names = c("white", "orange", "black"))
 #' imgClass <- classifyColor(imgTransList[[2]], RGB = RGB, allow.admixture = TRUE, output = "both")
 #' raster::plotRGB(imgClass$RGB)
 #' }

@@ -21,8 +21,7 @@ coloration metrics from images and perform comparative analyses.
 You can install the development version of ColorAR like so:
 
 ``` r
-library(devtools)
-install::github("agarciaEE/ColorAR")
+devtools::install_github("agarciaEE/ColorAR")
 ```
 
 ## Example

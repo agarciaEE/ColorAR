@@ -45,12 +45,18 @@ The output from \code{\link{col.adjacency}}
 Color adjacency function computes estimates of the color transitions across the specified body axis.
 }
 \examples{
-RGB = data.frame(red = c(255, 255, 0), green = c(255, 165, 0), blue = c(255, 0, 0), row.names = c("white", "orange", "black"))
+RGB = data.frame(red = c(255, 255, 0),
+                 green = c(255, 165, 0),
+                 blue = c(255, 0, 0),
+                 row.names = c("white", "orange", "black"))
 imgClass <- classifyColor(imgTransList[[1]], RGB = RGB, allow.admixture = FALSE, output = "class")
 CA_df <- col.adjacency(imgClass$class, bckgr = 0)
 print(CA_df)
 \dontrun{
-RGB = data.frame(red = c(255, 255, 0), green = c(255, 165, 0), blue = c(255, 0, 0), row.names = c("white", "orange", "black"))
+RGB = data.frame(red = c(255, 255, 0),
+                 green = c(255, 165, 0),
+                 blue = c(255, 0, 0),
+                 row.names = c("white", "orange", "black"))
 imgClass <- classifyColor(imgTransList[[2]], RGB = RGB, allow.admixture = TRUE, output = "both")
 CA_df <- col.adjacency(imgClass$class, bckgr = 0)
 print(CA_df)

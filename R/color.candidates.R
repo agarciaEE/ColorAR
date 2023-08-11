@@ -16,7 +16,8 @@
 #' color.candidates(img)
 #' \dontrun{
 #' img <- jpeg::readJPEG(system.file("img", "Rlogo.jpg", package="jpeg"))
-#' img <- raster::stack(sapply(1:3, function(i) raster::raster(scales::rescale(img[,,1], to = c(0,255)))))
+#' img <- raster::stack(sapply(1:3, function(i)
+#'                    raster::raster(scales::rescale(img[,,1], to = c(0,255)))))
 #' color.candidates(img, 3)
 #' }
 color.candidates <- function(x, n){

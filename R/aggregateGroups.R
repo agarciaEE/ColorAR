@@ -14,13 +14,13 @@
 #' @examples
 #' df <- sapply(1:10, function(i) runif(50))
 #' comp <- stats::prcomp(df)
-#' groups <- sample(1:3, 50, replace = T)
-#' groups_df <- aggregateGroups(comp, groups, PCx = 1, PCy = 2, scale = T)
+#' groups <- sample(1:3, 50, replace = TRUE)
+#' groups_df <- aggregateGroups(comp, groups, PCx = 1, PCy = 2, scale = TRUE)
 #' \dontrun{
 #' df <- sapply(1:10, function(i) runif(100))
 #' comp <- stats::prcomp(df)
-#' groups <- sample(LETTERS[1:5], 100, replace = T)
-#' groups_df <- aggregateGroups(comp, groups, PCx = 1, PCy = 2, scale = T)
+#' groups <- sample(LETTERS[1:5], 100, replace = TRUE)
+#' groups_df <- aggregateGroups(comp, groups, PCx = 1, PCy = 2, scale = TRUE)
 #' }
 aggregateGroups <- function(pca, groups, PCx = 1, PCy = 2, scale = F) {
 

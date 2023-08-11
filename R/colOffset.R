@@ -9,18 +9,21 @@
 #' @return The output from \code{\link{colOffset}}
 #' @export
 #' @importFrom raster stack raster nlayers as.data.frame unstack
-#' @importFrom stats na.exclude quantile density
+#' @importFrom stats setNames quantile density na.exclude
 #' @importFrom jpeg readJPEG
 #' @importFrom scales rescale
 #' @examples
+#' library(ColorAR)
+#' targetcolor <- c(0, 255, 255)
 #' img <- jpeg::readJPEG(system.file("img", "Rlogo.jpg", package="jpeg"))
-#' img <- raster::stack(sapply(1:3, function(i) raster::raster(scales::rescale(img[,,1], to = c(0,255)))))
-#' colOffset(img, c(0, 255, 255))
+#' img <- raster::stack(sapply(1:3, function(i)
+#'                    raster::raster(scales::rescale(img[,,1], to = c(0,255)))))
+#' colOffset(img, targetcolor)
 #' \dontrun{
-#' img <- jpeg::readJPEG(system.file("img", "Rlogo.jpg", package="jpeg"))
-#' img <- raster::stack(sapply(1:3, function(i) raster::raster(scales::rescale(img[,,1], to = c(0,255)))))
-#' imgList <- list(img, img, img)
-#' colOffset(imgList, c(0, 255, 255))
+#' library(ColorAR)
+#' data(imageList)
+#' targetcolor <- c(255, 165, 0)
+#' colOffset(imgList[1:3], targetcolor)
 #' }
 colOffset <- function(image, RGB, min = 0.1){
 
@@ -32,7 +35,7 @@ colOffset <- function(image, RGB, min = 0.1){
   }
   if (is.list(image)) {
     df <- lapply(image, function(x) raster::unstack(x))
-    df <- lapply(df, function(x)  setNames(x, c("R", "G", "B")))
+    df <- lapply(df, function(x)  stats::setNames(x, c("R", "G", "B")))
     df = reverse.list(df)
     df <- as.matrix(sapply(df, function(x) rowMeans(raster::as.data.frame(stack(x)), na.rm = T)))
   }
@@ -50,7 +53,7 @@ colOffset <- function(image, RGB, min = 0.1){
     Offset <- dens$x[which.min(dens$y)]
   }
   else {
-    warning("Target colour outside colour candidates", immediate. = T)
+    message("Target colour outside colour candidates")
     peaks <- color.candidates(df)
     max.dist <- min(apply(peaks, 1, function(i) mean(sapply(1:3, function(j) abs(i[j]-RGB[j])/255))))
     df <- do.call(rbind, lapply(d, function(x) dec2rgb(x)))
@@ -59,7 +62,7 @@ colOffset <- function(image, RGB, min = 0.1){
     message("Most proximal candidate colour is: ")
     cat(candidate, "\n")
     if(dist > max.dist){
-      warning("Most proximal candidate color is out of target color range. Setting target color offset to minimum")
+      message("Most proximal candidate color is out of target color range. Setting target color offset to minimum")
       Offset = min
     }
     else{

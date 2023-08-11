@@ -30,7 +30,8 @@ raster::plotRGB(rPCAphen[[1]])
 raster::plotRGB(rPCAphen[[2]])
 \dontrun{
 library(ColorAR)
-rpca.coords <- data.frame(apply(imgPCA12$pca$x[,1:5], 2, function(i) sample(i))[1:5,], row.names = 1:5)
+rpca.coords <- data.frame(apply(imgPCA12$pca$x[,1:5], 2,
+                            function(i) sample(i))[1:5,], row.names = 1:5)
 rPCAphen <- reconstruct.PCAphenotype(rpca.coords, imgPCA12)
 }
 }

@@ -30,8 +30,7 @@ The goal of ColorAR is to provide a set of functions to compute coloration metri
 You can install the development version of ColorAR like so:
 
 ``` r
-library(devtools)
-install::github("agarciaEE/ColorAR")
+devtools::install_github("agarciaEE/ColorAR")
 
 ```
 

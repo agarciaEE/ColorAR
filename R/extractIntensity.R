@@ -41,7 +41,7 @@ extractIntensity <- function(image, RGB = c(0,0,0), method = c("RGB", "dec"),
         message("Target colour within colour candidates")
       }
       else{
-        warning("Target color is not a predominant color.", immediate. = T)
+        message("Target color is not a predominant color.")
       }
       df <- sapply(1:3, function(i) abs(df[,i] - RGB[i])) # transform to distance to target color
       d <- lapply(1:3, function(i) stats::density(df[,i])) # compute density on distances

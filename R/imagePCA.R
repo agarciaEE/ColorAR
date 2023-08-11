@@ -31,19 +31,22 @@
 #' @return The output from \code{\link{imagePCA}}
 #' @export
 #' @importFrom stats na.exclude
-#' @importFrom raster nrow ncol extent raster resample as.data.frame stack mean
+#' @importFrom raster nrow ncol extent raster resample as.data.frame stack mean crs ncell
 #' @importFrom sp disaggregate
+#' @importFrom graphics barplot
 #'
 #' @examples
 #' library(ColorAR)
 #' data(imgTransList)
-#' imgPCA12 <-  imagePCA(imgTransList, PCx = 1, PCy = 2, scale = F, plot.eigen = F, plot.PCA = F,
-#'                         interpolate = 5, plot.names = F, plot.images = F, plot.tree = NULL, type = "RGB" , as.RGB = F)
+#' imgPCA12 <-  imagePCA(imgTransList, PCx = 1, PCy = 2, scale = FALSE,
+#'                      plot.eigen = FALSE, plot.PCA = FALSE,
+#'                      interpolate = 5, plot.names = FALSE, plot.images = FALSE,
+#'                      plot.tree = NULL, type = "RGB" , as.RGB = FALSE)
 #'
-imagePCA <- function(imgList, res = NULL, tree = NULL, groups = NULL, plot.eigen = T, plot.PCA = T, plot.tree = "integrated",
-                     node.width = 0.5, col.branches = F, node.pch = 18, size = 0.1, fill.NAs = F,
-                     PCx = 1, PCy = 2, plot.names = T, plot.images = TRUE, interpolate = NULL,  cex = 1, type = c("RGB", "decimal", "raster"), as.RGB = F,
-                     scale = F, cols = c("red", "grey90", "blue"), colPCA = NULL, coltree = colPCA, palette = NULL){
+imagePCA <- function(imgList, res = NULL, tree = NULL, groups = NULL, plot.eigen = TRUE, plot.PCA = TRUE, plot.tree = "integrated",
+                     node.width = 0.5, col.branches = FALSE, node.pch = 18, size = 0.1, fill.NAs = FALSE,
+                     PCx = 1, PCy = 2, plot.names = T, plot.images = TRUE, interpolate = NULL,  cex = 1, type = c("RGB", "decimal", "raster"), as.RGB = FALSE,
+                     scale = FALSE, cols = c("red", "grey90", "blue"), colPCA = NULL, coltree = colPCA, palette = NULL){
 
   out = list()
   type = type[1]
@@ -71,7 +74,7 @@ imagePCA <- function(imgList, res = NULL, tree = NULL, groups = NULL, plot.eigen
       ratio = (e[2]-e[1])/(e[4]-e[3])
       ras = e
       rRe <- raster::raster(nrow=res,ncol=floor(res*ratio))
-      crs(rRe) = NA
+      raster::crs(rRe) = NA
       raster::extent(rRe) <- ras
       r = raster::resample(r, rRe, method = "ngb")
     }
@@ -139,7 +142,7 @@ imagePCA <- function(imgList, res = NULL, tree = NULL, groups = NULL, plot.eigen
   pc.vecMay[PCy] <- PCymax
   if(type == "RGB"){
     n <- length(comp$center)/3
-    xy <- raster::xyFromCell(r, 1:ncell(r))
+    xy <- raster::xyFromCell(r, 1:raster::ncell(r))
     rw.val <- rw.val[1:n]
     center <- lapply(1:3, function(i) comp$center[(n*i-n+1):(n*i)])
     rotation <- lapply(1:3, function(i) rotation[(n*i-n+1):(n*i),])

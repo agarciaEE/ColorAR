@@ -18,14 +18,14 @@ The output from \code{\link{imageSI}}
 Extract image saturation and intensity
 }
 \examples{
-libary(ColorAR)
+library(ColorAR)
 data(imgTransList)
 img <- imgTransList[[1]]
-imgDarkness <- imageSI(img)
+imgSI <- imageSI(img)
 \dontrun{
-libary(ColorAR)
+library(ColorAR)
 data(imgTransList)
 img <- imgTransList[[2]]
-imgDarkness<- imageSI(img)
+imgSI <- imageSI(img)
 }
 }

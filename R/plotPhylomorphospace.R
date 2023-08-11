@@ -23,6 +23,8 @@
 #' @importFrom grDevices colorRampPalette
 #' @importFrom viridis viridis
 #' @importFrom phytools fastAnc
+#' @importFrom stats setNames
+#' @importFrom graphics points lines
 #'
 #' @examples
 #' library(ColorAR)
@@ -30,14 +32,14 @@
 #' X <- data.frame(trait1 = runif(26, -10, 10), trait2 = runif(26, -25, 25))
 #' plotPhylomorphospace(tree, X)
 #' \dontrun{
-#' plotPhylomorphospace(tree, X, palette = rainbow(6), col.branches = T)
+#' plotPhylomorphospace(tree, X, palette = rainbow(6), col.branches = TRUE)
 #' }
 plotPhylomorphospace <- function(tree, X, cols = NULL,
                              palette = NULL, cex = 1,
                              node.pch = 18, node.width = 0.5, tip.pch = 19,
                              xlab="trait 1", ylab="trait 2",
                              xlim = range(X[, 1]), ylim = range(X[, 2]),
-                             col.branches = F, add = F){
+                             col.branches = FALSE, add = FALSE){
 
   if(ape::is.rooted(tree)){ tree <- ape::unroot(tree) }
   if (is.null(cols)){
@@ -63,14 +65,14 @@ plotPhylomorphospace <- function(tree, X, cols = NULL,
   }
   else {
     names(tree$tip.label) = NULL
-    col.edge <- setNames(rep("grey20", length(unique(as.vector(tree$edge)))),  unique(as.vector(tree$edge)))
+    col.edge <- stats::setNames(rep("grey20", length(unique(as.vector(tree$edge)))),  unique(as.vector(tree$edge)))
   }
 
   A <- apply(X, 2, phytools::fastAnc, tree = tree)
 
-  aa <- setNames(c(X[tree$tip.label, 1], A[, 1]), c(1:length(tree$tip.label),
+  aa <- stats::setNames(c(X[tree$tip.label, 1], A[, 1]), c(1:length(tree$tip.label),
                                                     rownames(A)))
-  bb <- setNames(c(X[tree$tip.label, 2], A[, 2]), c(1:length(tree$tip.label),
+  bb <- stats::setNames(c(X[tree$tip.label, 2], A[, 2]), c(1:length(tree$tip.label),
                                                     rownames(A)))
   XX <- matrix(aa[as.character(tree$edge)], nrow(tree$edge),
                2)
@@ -81,19 +83,19 @@ plotPhylomorphospace <- function(tree, X, cols = NULL,
          xlab = xlab, ylab = ylab, pch = 16, cex = 0.1, col = "white",
          axes = T, frame.plot = TRUE)
   }
-  for (i in 1:nrow(XX)) lines(XX[i, ], YY[i, ],
+  for (i in 1:nrow(XX)) graphics::lines(XX[i, ], YY[i, ],
                               col = mix.colors(c(col.edge[as.character(tree$edge[i,1])],
                                                  col.edge[as.character(tree$edge[i,2])])), lwd = 1)
 
   zz <- c(tree$edge[1, 1], tree$edge[tree$edge[, 2] > length(tree$tip.label),
                                      2])
-  points(XX[1,1], YY[1,1], pch = 8, cex = node.width*cex, col = col.edge[as.character(zz[1])])
-  points(XX[tree$edge[, 2] > length(tree$tip.label),
+  graphics::points(XX[1,1], YY[1,1], pch = 8, cex = node.width*cex, col = col.edge[as.character(zz[1])])
+  graphics::points(XX[tree$edge[, 2] > length(tree$tip.label),
             2],YY[tree$edge[, 2] > length(tree$tip.label),
                   2], pch = node.pch, cex = node.width*cex, col = col.edge[as.character(zz[-1])])
   zz <- sapply(1:length(tree$tip.label), function(x, y) which(x ==
                                                                 y), y = tree$edge[, 2])
-  points(XX[tree$edge[, 2] <= length(tree$tip.label), 2], YY[tree$edge[,
+  graphics::points(XX[tree$edge[, 2] <= length(tree$tip.label), 2], YY[tree$edge[,
                                                                        2] <= length(tree$tip.label), 2], pch = tip.pch, cex = cex,
          col = cols[tree$tip.label])
 }

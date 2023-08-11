@@ -6,13 +6,15 @@
 #' @return The output from \code{\link{reverse.list}}
 #' @export
 #'
+#' @importFrom stats setNames
+#'
 #' @examples
 #' library(ColorAR)
 #' ll <- list(a = list("A" = 1, "B" = 2, "C" = 3), b = list("D" = 1, "F" = 2, "G" = 3))
 #' reverse.list(ll)
 reverse.list <-  function(ll) {
   nms <- unique(unlist(lapply(ll, function(X) names(X))))
-  ll <- lapply(ll, function(X) setNames(X[nms], nms))
+  ll <- lapply(ll, function(X) stats::setNames(X[nms], nms))
   ll <- apply(do.call(rbind, ll), 2, as.list)
   lapply(ll, function(X) X[!sapply(X, is.null)])
 }

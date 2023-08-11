@@ -9,12 +9,12 @@
 #' @importFrom raster as.data.frame
 #' @importFrom stats na.exclude
 #' @examples
-#' libary(ColorAR)
+#' library(ColorAR)
 #' data(imgTransList)
 #' img <- imgTransList[[1]]
 #' imgDarkness <- imageDarkness(img)
 #' \dontrun{
-#' libary(ColorAR)
+#' library(ColorAR)
 #' data(imgTransList)
 #' img <- imgTransList[[2]]
 #' imgDarkness<- imageDarkness(img)

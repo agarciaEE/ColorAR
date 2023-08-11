@@ -31,17 +31,30 @@
 #' @importFrom Morpho procSym computeTransform applyTransform
 #' @importFrom patternize lanArray redRes
 #' @importFrom utils capture.output
+#' @importFrom graphics par
 #'
 #' @examples
 #' library(ColorAR)
-#' data(imageList)
-#' data(landmarkList)
-#' lndmks_2drop  = c(2, 7, 28, 29)
-#' imgTransList = imageTransformation(imageList[1:5], landmarkList[1:5], adjustCoords = T, transformRef = "meanshape", drop = lndmks_2drop,
-#' crop = FALSE, cropOffset = c(0, 0, 0, 0), res = 300, keep.ASP  = T,
-#' removebg.by = "landmarks", smooth = 1, rescale = T,
-#' transformType = "tps", focal = F, sigma = 3, interpolate =  5,
-#' plot = "compare")
+#'
+#' samples <- sub(".png", "", list.files(system.file("extdata", "pictures",
+#'                                         package="ColorAR"), pattern = "\\.png$"))[1:5]
+#'
+#' prepath <- system.file("extdata", "pictures", package="ColorAR")
+#' imgList <- lapply(file.path(prepath, paste0(samples, ".png")), raster::stack)
+#'
+#' prepath <- 'system.file("extdata", "landmarks", package="ColorAR")
+#' landList <- lapply(file.path(prepath, paste0(samples, ".txt")), utils::read.table)
+#'
+#' names(imgList) <- names(landList) <- samples
+#'
+#' imgTransList = imageTransformation(imgList, landList,
+#'                                    adjustCoords = TRUE, transformRef = "meanshape",
+#'                                    drop = lndmks_2drop, crop = FALSE,
+#'                                    cropOffset = c(0, 0, 0, 0), res = 300,
+#'                                    keep.ASP  = TRUE, removebg.by = "color", bgcol = c(0,165,255),
+#'                                    smooth = 1, rescale = TRUE, transformType = "tps",
+#'                                    focal = FALSE, sigma = 3, interpolate =  5,
+#'                                    plot = "compare")
 #'
 imageTransformation <- function(sampleList, landList, adjustCoords = F, transformRef = "meanshape",
                                 crop = FALSE, cropOffset = c(0, 0, 0, 0), res = 300, keep.ASP = T, drop = NULL,
@@ -96,7 +109,7 @@ imageTransformation <- function(sampleList, landList, adjustCoords = F, transfor
                                   max(landm[, 2]) + max(landm[,2]) * cropOffset[4]/100)
       imageC <- raster::crop(image, extRaster)
       y <- raster::raster(ncol = dim(image)[2], nrow = dim(image)[1])
-      extent(y) <- extRasterOr
+      raster::extent(y) <- extRasterOr
       image <- raster::resample(imageC, y)
     }
     if (focal) {
@@ -142,7 +155,7 @@ imageTransformation <- function(sampleList, landList, adjustCoords = F, transfor
       rRe <- raster::raster(nrow=dim(image)[1],ncol=dim(image)[2])
       raster::crs(rRe) = raster::crs(image)
       raster::extent(rRe) <-  raster::extent(image)
-      extent(imgTransformed) = raster::extent(image)
+      raster::extent(imgTransformed) = raster::extent(image)
       imgTransformed = raster::stack(raster::resample(imgTransformed, rRe, method = "ngb"))
     }
     if (is.numeric(interpolate)){
@@ -154,7 +167,7 @@ imageTransformation <- function(sampleList, landList, adjustCoords = F, transfor
       if(nlayers(imgTransformed) == 1){plot(imgTransformed)}
     }
     if (plot == "compare") {
-      par(mfrow = c(1, 2))
+      graphics::par(mfrow = c(1, 2))
       if(nlayers(imgTransformed) == 3){
         raster::plotRGB(image)
         text(raster::extent(image)[2], raster::extent(image)[3], "original", adj = c(1,0))

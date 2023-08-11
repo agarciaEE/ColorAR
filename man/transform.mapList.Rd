@@ -20,25 +20,15 @@
 
 \item{res}{resolution.}
 
-\item{type}{wheter RGB or raster format.}
+\item{type}{whether RGB or raster format.}
 
 \item{is.NA}{value to give to NA values.}
 
-\item{interpolate}{Integer for the interpolateing factor.}
+\item{interpolate}{Integer for the interpolating factor.}
 }
 \value{
 The output from \code{\link{transform.mapList}}
 }
 \description{
 Internal function to transform images for PCA legend.
-}
-\examples{
-library(ColorAR)
-data(imgPCA12)
-transform.mapList(imgPCA12$images, imgPCA12$ras, type = "raster")
-\dontrun{
-library(ColorAR)
-data(imgPCA12)
-transform.mapList(imgPCA12$images, imgPCA12$ras, type = "RGB", interpolate  = 5)
-}
 }

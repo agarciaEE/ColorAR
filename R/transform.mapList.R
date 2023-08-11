@@ -5,22 +5,13 @@
 #' @param imgList a list of images.
 #' @param mapList legend list.
 #' @param res resolution.
-#' @param type wheter RGB or raster format.
+#' @param type whether RGB or raster format.
 #' @param is.NA value to give to NA values.
-#' @param interpolate Integer for the interpolateing factor.
+#' @param interpolate Integer for the interpolating factor.
 #'
 #' @return The output from \code{\link{transform.mapList}}
 #' @importFrom raster extent raster crs ncol nrow resample disaggregate mean nlayers
 #'
-#' @examples
-#' library(ColorAR)
-#' data(imgPCA12)
-#' transform.mapList(imgPCA12$images, imgPCA12$ras, type = "raster")
-#' \dontrun{
-#' library(ColorAR)
-#' data(imgPCA12)
-#' transform.mapList(imgPCA12$images, imgPCA12$ras, type = "RGB", interpolate  = 5)
-#' }
 transform.mapList <- function(imgList, mapList, res = NULL, type  = c("RGB", "raster"), is.NA = 0, interpolate = NULL){
 
   ras = raster::extent(imgList[[1]])
@@ -33,7 +24,7 @@ transform.mapList <- function(imgList, mapList, res = NULL, type  = c("RGB", "ra
       ratio = (e[2]-e[1])/(e[4]-e[3])
       ras = e
       trRe <- raster::raster(nrow=res,ncol=floor(res*ratio))
-      crs(trRe) = NA
+      raster::crs(trRe) = NA
       raster::extent(trRe) <- ras
       mapList[[i]] = raster::resample(mapList[[i]], trRe, method = "ngb")
     }

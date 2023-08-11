@@ -85,11 +85,13 @@ plot imagePCA object with standard 2-D PCA axis
 }
 \examples{
 color.list <- viridis::viridis(5)
-col_region <- setNames(rep(color.list)[as.factor(dataset$region)], dataset$sample)
-col_region_legend <- setNames(rep(color.list)[as.factor(levels(as.factor(dataset$region)))], levels(as.factor(dataset$region)))
+col_region <- stats::setNames(rep(color.list)[as.factor(dataset$region)], dataset$sample)
+colreg_legend <- stats::setNames(rep(color.list)[as.factor(levels(as.factor(dataset$region)))],
+                                levels(as.factor(dataset$region)))
 imagePCA.plot(imgPCA12,  tree = tree, plot.tree = "side",
-              plot.images = F, cex = 1, plot.names = T, colPCA = col_region, legend = col_region_legend)
+              plot.images = FALSE, cex = 1, plot.names = TRUE,
+              colPCA = col_region, legend = colreg_legend)
 \dontrun{
-imagePCA.plot(imgPCA12, tree = tree, plot.tree = "integrated", plot.images = F)
+imagePCA.plot(imgPCA12, tree = tree, plot.tree = "integrated", plot.images = FALSE)
 }
 }

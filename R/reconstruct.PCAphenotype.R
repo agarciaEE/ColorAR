@@ -10,7 +10,7 @@
 #' @export
 #' @importFrom stats na.exclude
 #' @importFrom scales rescale
-#' @importFrom raster nrow ncol extent raster crs xyFromCell stack disaggregate aggregate
+#' @importFrom raster nrow ncol extent raster crs xyFromCell stack disaggregate aggregate ncell
 #'
 #' @examples
 #' library(ColorAR)
@@ -21,7 +21,8 @@
 #' raster::plotRGB(rPCAphen[[2]])
 #' \dontrun{
 #' library(ColorAR)
-#' rpca.coords <- data.frame(apply(imgPCA12$pca$x[,1:5], 2, function(i) sample(i))[1:5,], row.names = 1:5)
+#' rpca.coords <- data.frame(apply(imgPCA12$pca$x[,1:5], 2,
+#'                             function(i) sample(i))[1:5,], row.names = 1:5)
 #' rPCAphen <- reconstruct.PCAphenotype(rpca.coords, imgPCA12)
 #' }
 reconstruct.PCAphenotype <- function(x, imagePCA, PCnames = NULL, interpolate = 5) {
@@ -52,7 +53,7 @@ reconstruct.PCAphenotype <- function(x, imagePCA, PCnames = NULL, interpolate = 
   rotation <- comp$rotation # get rotation matrix
 
   n <- length(comp$center)/3 # number of cells for each RGB layer
-  xy <- raster::xyFromCell(r, 1:ncell(r)) # coordinates of the images
+  xy <- raster::xyFromCell(r, 1:raster::ncell(r)) # coordinates of the images
   cellIDs <- cellIDs[1:n] # get only the row names of the first layer
 
   center <- lapply(1:3, function(i) comp$center[(n*i-n+1):(n*i)]) # split centers per layer

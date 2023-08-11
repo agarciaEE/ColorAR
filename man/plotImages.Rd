@@ -50,16 +50,18 @@ plot images into specified coordinates
 \examples{
 library(ColorAR)
 img <- jpeg::readJPEG(system.file("img", "Rlogo.jpg", package="jpeg"))
-img <- img <- raster::stack(sapply(1:3, function(i) raster::raster(scales::rescale(img[,,1], to = c(0,255)))))
+img <- img <- raster::stack(sapply(1:3, function(i)
+                            raster::raster(scales::rescale(img[,,1], to = c(0,255)))))
 imgList <- list(img, img, img)
 x <- rep(mean(par()$usr[1:2]),3)
 y <- seq(par()$usr[3], par()$usr[4], length.out = 3)
 plot.new()
 plotImages(x, y, imgList, names = letters[1:3], pos = 2, adj = 1)
 \dontrun{
-#' library(ColorAR)
+library(ColorAR)
 xy = expand.grid(1:7, 1:3)
-plot(NULL, xlim = c(0.5,7.5), ylim = c(0.5,3.5), type="n", xlab="", ylab="", xaxt='n', yaxt='n', bty="n")
+plot(NULL, xlim = c(0.5,7.5), ylim = c(0.5,3.5),
+     type="n", xlab="", ylab="", xaxt='n', yaxt='n', bty="n")
 plotImages(xy[,1], xy[,2], imageList, names = letters[1:length(imageList)], pos = 2, adj = 2)
 }
 }

@@ -16,12 +16,12 @@ The output from \code{\link{imageDarkness}}
 Extract image darkness
 }
 \examples{
-libary(ColorAR)
+library(ColorAR)
 data(imgTransList)
 img <- imgTransList[[1]]
 imgDarkness <- imageDarkness(img)
 \dontrun{
-libary(ColorAR)
+library(ColorAR)
 data(imgTransList)
 img <- imgTransList[[2]]
 imgDarkness<- imageDarkness(img)

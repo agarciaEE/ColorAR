@@ -9,14 +9,14 @@ imagePCA(
   res = NULL,
   tree = NULL,
   groups = NULL,
-  plot.eigen = T,
-  plot.PCA = T,
+  plot.eigen = TRUE,
+  plot.PCA = TRUE,
   plot.tree = "integrated",
   node.width = 0.5,
-  col.branches = F,
+  col.branches = FALSE,
   node.pch = 18,
   size = 0.1,
-  fill.NAs = F,
+  fill.NAs = FALSE,
   PCx = 1,
   PCy = 2,
   plot.names = T,
@@ -24,8 +24,8 @@ imagePCA(
   interpolate = NULL,
   cex = 1,
   type = c("RGB", "decimal", "raster"),
-  as.RGB = F,
-  scale = F,
+  as.RGB = FALSE,
+  scale = FALSE,
   cols = c("red", "grey90", "blue"),
   colPCA = NULL,
   coltree = colPCA,
@@ -92,7 +92,9 @@ Performs PCA on a list of images
 \examples{
 library(ColorAR)
 data(imgTransList)
-imgPCA12 <-  imagePCA(imgTransList, PCx = 1, PCy = 2, scale = F, plot.eigen = F, plot.PCA = F,
-                        interpolate = 5, plot.names = F, plot.images = F, plot.tree = NULL, type = "RGB" , as.RGB = F)
+imgPCA12 <-  imagePCA(imgTransList, PCx = 1, PCy = 2, scale = FALSE,
+                     plot.eigen = FALSE, plot.PCA = FALSE,
+                     interpolate = 5, plot.names = FALSE, plot.images = FALSE,
+                     plot.tree = NULL, type = "RGB" , as.RGB = FALSE)
 
 }

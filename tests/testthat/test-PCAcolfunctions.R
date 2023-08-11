@@ -1,4 +1,4 @@
-testthat::test_that("Testing imageTransformation function", {
+testthat::test_that("Testing PCA ColorAR functions", {
 
   library(ColorAR)
 

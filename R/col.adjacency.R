@@ -14,14 +14,22 @@
 #'
 #' @return The output from \code{\link{col.adjacency}}
 #' @export
-#' @importFrom raster raster extent resample unique
+#' @importFrom raster raster extent resample unique crs as.matrix
+#' @importFrom stats runif
+#'
 #' @examples
-#' RGB = data.frame(red = c(255, 255, 0), green = c(255, 165, 0), blue = c(255, 0, 0), row.names = c("white", "orange", "black"))
+#' RGB = data.frame(red = c(255, 255, 0),
+#'                  green = c(255, 165, 0),
+#'                  blue = c(255, 0, 0),
+#'                  row.names = c("white", "orange", "black"))
 #' imgClass <- classifyColor(imgTransList[[1]], RGB = RGB, allow.admixture = FALSE, output = "class")
 #' CA_df <- col.adjacency(imgClass$class, bckgr = 0)
 #' print(CA_df)
 #' \dontrun{
-#' RGB = data.frame(red = c(255, 255, 0), green = c(255, 165, 0), blue = c(255, 0, 0), row.names = c("white", "orange", "black"))
+#' RGB = data.frame(red = c(255, 255, 0),
+#'                  green = c(255, 165, 0),
+#'                  blue = c(255, 0, 0),
+#'                  row.names = c("white", "orange", "black"))
 #' imgClass <- classifyColor(imgTransList[[2]], RGB = RGB, allow.admixture = TRUE, output = "both")
 #' CA_df <- col.adjacency(imgClass$class, bckgr = 0)
 #' print(CA_df)
@@ -35,7 +43,7 @@ col.adjacency <- function(r, kcodes = NULL, axis = c("x", "y", "xy", "yx"), extr
   ratio = (e[2]-e[1])/(e[4]-e[3])
   ras = e
   rRe <- raster::raster(nrow=res,ncol=res*ratio)
-  crs(rRe) = NA
+  raster::crs(rRe) = NA
   raster::extent(rRe) <- ras
   r = raster::resample(r, rRe, method = "ngb")
   if (plot){
@@ -54,7 +62,7 @@ col.adjacency <- function(r, kcodes = NULL, axis = c("x", "y", "xy", "yx"), extr
   k = length(kcodes)
   if(extra.cols){ r[!is.na(r[]) & !r[] %in% kcodes] = max(kcodes)+1 }
   else {  r[!r %in% kcodes] = NA  }
-  M = as.matrix(r)
+  M = raster::as.matrix(r)
   if (axis == "x"){
     C = table( c(M[,-ncol(M)]), c(M[,-1]) )
   }
@@ -129,8 +137,8 @@ col.adjacency <- function(r, kcodes = NULL, axis = c("x", "y", "xy", "yx"), extr
     dcr = NULL
     dtr = NULL
     for (l in 1:iterations){
-      x = runif(N)
-      y = runif(N)
+      x = stats::runif(N)
+      y = stats::runif(N)
       x.class = sapply(x, function(v) which.min(abs(v-L)))
       y.class = sapply(y, function(v) which.min(abs(v-L)))
       D = table(x.class, y.class)

@@ -74,15 +74,3 @@ The output from \code{\link{imageTransformation}}
 \description{
 Process images to align using procrustes analyses based on landmarks and remove background
 }
-\examples{
-library(ColorAR)
-data(imageList)
-data(landmarkList)
-lndmks_2drop  = c(2, 7, 28, 29)
-imgTransList = imageTransformation(imageList[1:5], landmarkList[1:5], adjustCoords = T, transformRef = "meanshape", drop = lndmks_2drop,
-crop = FALSE, cropOffset = c(0, 0, 0, 0), res = 300, keep.ASP  = T,
-removebg.by = "landmarks", smooth = 1, rescale = T,
-transformType = "tps", focal = F, sigma = 3, interpolate =  5,
-plot = "compare")
-
-}

@@ -17,8 +17,8 @@ plotPhylomorphospace(
   ylab = "trait 2",
   xlim = range(X[, 1]),
   ylim = range(X[, 2]),
-  col.branches = F,
-  add = F
+  col.branches = FALSE,
+  add = FALSE
 )
 }
 \arguments{
@@ -62,6 +62,6 @@ tree <- ape::rtree(26, tip.label = letters[1:26])
 X <- data.frame(trait1 = runif(26, -10, 10), trait2 = runif(26, -25, 25))
 plotPhylomorphospace(tree, X)
 \dontrun{
-plotPhylomorphospace(tree, X, palette = rainbow(6), col.branches = T)
+plotPhylomorphospace(tree, X, palette = rainbow(6), col.branches = TRUE)
 }
 }

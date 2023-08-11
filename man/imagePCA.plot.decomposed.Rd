@@ -27,13 +27,17 @@ imagePCA.plot.decomposed(
 
 \item{scale}{logical whether to scale the PCA scores. Default is FALSE.}
 
-\item{tree.cols}{vector of k colors with length of n tips of the given tree. If NULL, coltree will match colPCA. Default is NULL.}
+\item{PCA.cols}{vector of colors to plot pca points with length of number images given to the imagePCA. If NULL, it will be set to black.}
+
+\item{tree.cols}{vector of colors with length of n tips of the given tree. If NULL, coltree will match colPCA. Default is NULL.}
 
 \item{plot.images}{logical whether to plot images. Default is FALSE.}
 
 \item{PCA.legend}{Logical whether to plot PCA legend. Default TRUE.}
 
 \item{tree.legend}{Logical whether to plot tree legend. Default TRUE.}
+
+\item{pch}{symbol type. Default is 19}
 
 \item{...}{extra arguments passed to graphical functions (e.g. cex = 1)}
 
@@ -54,7 +58,7 @@ imagePCA.plot.decomposed(imgPCA12, tree)
 library(ColorAR)
 data(imgPCA12)
 gtree <- ape::rtree(3, tip.label = letters[1:3])
-groups <- sample(letters[1:3], length(imgPCA12$images), replace = T)
+groups <- sample(letters[1:3], length(imgPCA12$images), replace = TRUE)
 imagePCA.plot.decomposed(imgPCA12, gtree, groups = groups)
 }
 }

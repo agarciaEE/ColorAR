@@ -1,5 +1,6 @@
 ## code to prepare `DATASET` dataset goes here
 ## Load images
+raster::rasterOptions(todisk = FALSE)
 filenames <- sub(".png", "", list.files("inst/extdata/pictures/", pattern = "\\.png$"))
 
 prepath <- 'inst/extdata/pictures'
@@ -12,6 +13,7 @@ landmarkList <- lapply(file.path(prepath, paste0(filenames, extension)), utils::
 
 names(imageList) <- names(landmarkList) <- filenames
 
+raster::inMemory(imageList[[1]])
 dataset <- data.frame(sample = filenames, species = "Amphiprion clarkii", region = sub("[A-Z][a-z]*[0-9]*", "", filenames))
 dataset$region <- factor(dataset$region, levels = c("WI", "NWI", "CIP", "CP", "SWP"))
 
@@ -28,10 +30,12 @@ imgTransList = imageTransformation(imageList, landmarkList, adjustCoords = T, tr
 imgPCA12 <-  imagePCA(imgTransList, PCx = 1, PCy = 2, scale = F, plot.eigen = F, plot.PCA = F,
                       interpolate = 5, plot.names = F, plot.images = F, plot.tree = NULL, type = "RGB" , as.RGB = F)
 
+usethis::use_data(dataset, overwrite = TRUE, compress="xz")
+usethis::use_data(landmarkList, overwrite = TRUE, compress="xz")
+usethis::use_data(imageList, overwrite = TRUE, compress="xz")
+usethis::use_data(imgTransList, overwrite = TRUE, compress="xz")
+usethis::use_data(tree, overwrite = TRUE, compress="xz")
+usethis::use_data(imgPCA12, overwrite = TRUE, compress="xz")
 
-usethis::use_data(dataset, overwrite = TRUE)
-usethis::use_data(landmarkList, overwrite = TRUE)
-usethis::use_data(imageList, overwrite = TRUE)
-usethis::use_data(imgTransList, overwrite = TRUE)
-usethis::use_data(tree, overwrite = TRUE)
-usethis::use_data(imgPCA12, overwrite = TRUE)
+#tools::checkRdaFiles("data/")
+
