@@ -42,7 +42,7 @@ Compute color proportion of an image:
 targetColor <- c(255, 165, 0) #orange RGB code
 
 Orange_proportion <- extractColor(imgTransList[[1]], targetColor)
-#> Warning in colOffset(image, RGB): Target colour outside colour candidates
+#> Target colour outside colour candidates
 #> 3 color candidates...
 #> Most proximal candidate colour is:
 #> 255 246 255
@@ -66,7 +66,7 @@ targetColors = data.frame(red = c(255, 255, 0),
 imgClass <- classifyColor(imgTransList[[1]], RGB = targetColors, allow.admixture = F, output = "both")
 #> Computing colors' offsets...
 #> Target colour within colour candidates
-#> Warning in colOffset(image, x): Target colour outside colour candidates
+#> Target colour outside colour candidates
 #> 3 color candidates...
 #> Most proximal candidate colour is:
 #> 255 246 255
