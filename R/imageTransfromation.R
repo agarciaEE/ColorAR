@@ -21,7 +21,9 @@
 #' @param interpolate Integer. Image interpolation to reduce NA values created by image transformation. Default = NULL.
 #' @param bgcol RGB code for detecting and remoovig background color. Default = NULL
 #' @param bg.offset numeric value between 0 and 1. If NULL, bg.offset will be estimated. color offset threshold to remove background color
-#' @param plot  If "compare", plots original image vs transformed. If "result", plot restuling transformed image. Default = FALSE
+#' @param plot If "compare", plots original image vs transformed. If "result", plot restuling transformed image. Default = FALSE
+#' @param save Logical, whether to save transformend raster images. Default = FALSE
+#' @param dir  If save is TRUE, directory name to save the transformed raster images in. if non-existent, it will create the directory. Default = current directory.
 #'
 #' @return The output from \code{\link{imageTransformation}}
 #' @export
@@ -60,7 +62,7 @@ imageTransformation <- function(sampleList, landList, adjustCoords = F, transfor
                                 crop = FALSE, cropOffset = c(0, 0, 0, 0), res = 300, keep.ASP = T, drop = NULL,
                                 removebg.by = c(FALSE, "color", "landmarks"), smooth = FALSE, rescale = F, resampleFactor = NULL,
                                 transformType = "tps", focal = F, sigma = 3, interpolate = NULL,
-                                bgcol = NULL, bg.offset = NULL, plot = FALSE ) {
+                                bgcol = NULL, bg.offset = NULL, plot = FALSE, save = FALSE, dir = "./") {
 
   removebg.by = removebg.by[1]
   rasterList <- list()
@@ -180,6 +182,10 @@ imageTransformation <- function(sampleList, landList, adjustCoords = F, transfor
         plot(imgTransformed)
         text(raster::extent(imgTransformed)[2], raster::extent(imgTransformed)[3], "transformed", adj = c(1,0))
       }
+    }
+    if (save) {
+      if (!dir.exists(dir)) { dir.create(dir) }
+      raster::writeRaster(imgTransformed, filename = file.path(dir, paste0(names(landList)[n], ".tif")))
     }
     rasterList[[names(landList)[n]]] <- imgTransformed
     print(paste("sample", names(landList)[n], "transformation done and added to rasterList",
