@@ -38,6 +38,25 @@
 #' @examples
 #' library(ColorAR)
 #'
+#' samples <- sub(".png", "", list.files(system.file("extdata", "pictures",
+#'                                         package="ColorAR"), pattern = "\\.png$"))[1:5]
+#'
+#' prepath <- system.file("extdata", "pictures", package="ColorAR")
+#' imgList <- lapply(file.path(prepath, paste0(samples, ".png")), raster::stack)
+#'
+#' prepath <- 'system.file("extdata", "landmarks", package="ColorAR")
+#' landList <- lapply(file.path(prepath, paste0(samples, ".txt")), utils::read.table)
+#'
+#' names(imgList) <- names(landList) <- samples
+#'
+#' imgTransList = imageTransformation(imgList, landList,
+#'                                    adjustCoords = TRUE, transformRef = "meanshape",
+#'                                    drop = lndmks_2drop, crop = FALSE,
+#'                                    cropOffset = c(0, 0, 0, 0), res = 300,
+#'                                    keep.ASP  = TRUE, removebg.by = "color", bgcol = c(0,165,255),
+#'                                    smooth = 1, rescale = TRUE, transformType = "tps",
+#'                                    focal = FALSE, sigma = 3, interpolate =  5,
+#'                                    plot = "compare")
 #'
 imageTransformation <- function(sampleList, landList, adjustCoords = F, transformRef = "meanshape",
                                 crop = FALSE, cropOffset = c(0, 0, 0, 0), res = 300, keep.ASP = T, drop = NULL,
