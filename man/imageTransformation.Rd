@@ -24,7 +24,9 @@ imageTransformation(
   interpolate = NULL,
   bgcol = NULL,
   bg.offset = NULL,
-  plot = FALSE
+  plot = FALSE,
+  save = FALSE,
+  dir = "./"
 )
 }
 \arguments{
@@ -67,10 +69,19 @@ imageTransformation(
 \item{bg.offset}{numeric value between 0 and 1. If NULL, bg.offset will be estimated. color offset threshold to remove background color}
 
 \item{plot}{If "compare", plots original image vs transformed. If "result", plot restuling transformed image. Default = FALSE}
+
+\item{save}{Logical, whether to save transformend raster images. Default = FALSE}
+
+\item{dir}{If save is TRUE, directory name to save the transformed raster images in. if non-existent, it will create the directory. Default = current directory.}
 }
 \value{
 The output from \code{\link{imageTransformation}}
 }
 \description{
 Process images to align using procrustes analyses based on landmarks and remove background
+}
+\examples{
+library(ColorAR)
+
+
 }
