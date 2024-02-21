@@ -98,7 +98,7 @@ imageTransformation <- function(sampleList, landList, adjustCoords = F, transfor
       sp.ref <- smoothr::smooth(sp.ref, method = "ksmooth", smooth = smooth)
     }
   }
-  if (save & overwrite) {
+  if (save & !overwrite) {
     files <- gsub("\\.tif", "", list.files(dir))
     idx <- which(names(sampleList) %in% files)
     message(length(idx), "images already present in the directory as transformed and thus, removed from the task. Modify parameters if is not the case.")
