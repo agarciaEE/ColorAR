@@ -24,6 +24,7 @@
 #' @param plot If "compare", plots original image vs transformed. If "result", plot restuling transformed image. Default = FALSE
 #' @param save Logical, whether to save transformend raster images. Default = FALSE
 #' @param dir  If save is TRUE, directory name to save the transformed raster images in. if non-existent, it will create the directory. Default = current directory.
+#' @param overwrite Logical. Whether overwrite the existent transformed images found in 'dir'. If TRUE, it will overwrite along the way. If FALSE, it will transform only those images that are not present in the given directory. Default is FALSE.
 #'
 #' @return The output from \code{\link{imageTransformation}}
 #' @export
@@ -62,7 +63,7 @@ imageTransformation <- function(sampleList, landList, adjustCoords = F, transfor
                                 crop = FALSE, cropOffset = c(0, 0, 0, 0), res = 300, keep.ASP = T, drop = NULL,
                                 removebg.by = c(FALSE, "color", "landmarks"), smooth = FALSE, rescale = F, resampleFactor = NULL,
                                 transformType = "tps", focal = F, sigma = 3, interpolate = NULL,
-                                bgcol = NULL, bg.offset = NULL, plot = FALSE, save = FALSE, dir = "./") {
+                                bgcol = NULL, bg.offset = NULL, plot = FALSE, save = FALSE, dir = "./", overwrite = FALSE) {
 
   removebg.by = removebg.by[1]
   rasterList <- list()
@@ -96,6 +97,13 @@ imageTransformation <- function(sampleList, landList, adjustCoords = F, transfor
     if (is.numeric(smooth)){
       sp.ref <- smoothr::smooth(sp.ref, method = "ksmooth", smooth = smooth)
     }
+  }
+  if (save & overwrite) {
+    files <- gsub("\\.tif", "", list.files(dir))
+    idx <- which(names(sampleList) %in% files)
+    message(length(idx), "images already present in the directory as transformed and thus, removed from the task. Modify parameters if is not the case.")
+    sampleList <- sampleList[-idx]
+    landList <- landList[-idx]
   }
   for (n in 1:length(sampleList)) {
     image <- sampleList[[n]]
