@@ -45,7 +45,7 @@
 #' prepath <- system.file("extdata", "pictures", package="ColorAR")
 #' imgList <- lapply(file.path(prepath, paste0(samples, ".png")), raster::stack)
 #'
-#' prepath <- 'system.file("extdata", "landmarks", package="ColorAR")
+#' prepath <- system.file("extdata", "landmarks", package="ColorAR")
 #' landList <- lapply(file.path(prepath, paste0(samples, ".txt")), utils::read.table)
 #'
 #' names(imgList) <- names(landList) <- samples
@@ -98,12 +98,15 @@ imageTransformation <- function(sampleList, landList, adjustCoords = F, transfor
       sp.ref <- smoothr::smooth(sp.ref, method = "ksmooth", smooth = smooth)
     }
   }
-  if (save & !overwrite) {
-    files <- gsub("\\.tif", "", list.files(dir))
-    idx <- which(names(sampleList) %in% files)
-    message(length(idx), "images already present in the directory as transformed and thus, removed from the task. Modify parameters if is not the case.")
-    sampleList <- sampleList[-idx]
-    landList <- landList[-idx]
+  if (save) {
+    if (!dir.exists(dir)) { dir.create(dir) }
+    if (!overwrite) {
+      files <- gsub("\\.tif", "", list.files(dir))
+      idx <- which(names(sampleList) %in% files)
+      message(length(idx), "images already present in the directory as transformed and thus, removed from the task. Modify parameters if is not the case.")
+      sampleList <- sampleList[-idx]
+      landList <- landList[-idx]
+    }
   }
   for (n in 1:length(sampleList)) {
     image <- sampleList[[n]]
@@ -192,7 +195,6 @@ imageTransformation <- function(sampleList, landList, adjustCoords = F, transfor
       }
     }
     if (save) {
-      if (!dir.exists(dir)) { dir.create(dir) }
       raster::writeRaster(imgTransformed, filename = file.path(dir, paste0(names(landList)[n], ".tif")))
     }
     rasterList[[names(landList)[n]]] <- imgTransformed
