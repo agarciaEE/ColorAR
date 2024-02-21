@@ -103,9 +103,11 @@ imageTransformation <- function(sampleList, landList, adjustCoords = F, transfor
     if (!overwrite) {
       files <- gsub("\\.tif", "", list.files(dir))
       idx <- which(names(sampleList) %in% files)
-      message(length(idx), "images already present in the directory as transformed and thus, removed from the task. Modify parameters if is not the case.")
-      sampleList <- sampleList[-idx]
-      landList <- landList[-idx]
+      if (length(idx) > 0){
+        message(length(idx), "images already present in the directory as transformed and thus, removed from the task. Modify parameters if is not the case.")
+        sampleList <- sampleList[-idx]
+        landList <- landList[-idx]
+      }
     }
   }
   for (n in 1:length(sampleList)) {
