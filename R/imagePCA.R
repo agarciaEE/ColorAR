@@ -5,6 +5,7 @@
 #' @param imgList list of images. Can be raster images or RGB images
 #' @param res number of rows to transform the images. If NULL, res will be extracted from imgList (If not all images  have the same resolution, first will be taken). Default NULL.
 #' @param tree Optional, if class 'phylo' tree is to be integrated in the output.
+#' @param phy.method  Method to obtain the correlation structure in phyl.pca from phytools. It can be "BM" or "lambda".
 #' @param groups Optional. vector of length equal to number of images defining groups to compute centroids and standard deviations PCA scores.
 #' @param plot.eigen Logical
 #' @param plot.PCA Logical
@@ -43,7 +44,7 @@
 #'                      interpolate = 5, plot.names = FALSE, plot.images = FALSE,
 #'                      plot.tree = NULL, type = "RGB" , as.RGB = FALSE)
 #'
-imagePCA <- function(imgList, res = NULL, tree = NULL, groups = NULL, plot.eigen = TRUE, plot.PCA = TRUE, plot.tree = "integrated",
+imagePCA <- function(imgList, res = NULL, tree = NULL, phy.method = "BM", groups = NULL, plot.eigen = TRUE, plot.PCA = TRUE, plot.tree = "integrated",
                      node.width = 0.5, col.branches = FALSE, node.pch = 18, size = 0.1, fill.NAs = FALSE,
                      PCx = 1, PCy = 2, plot.names = T, plot.images = TRUE, interpolate = NULL,  cex = 1, type = c("RGB", "decimal", "raster"), as.RGB = FALSE,
                      scale = FALSE, cols = c("red", "grey90", "blue"), colPCA = NULL, coltree = colPCA, palette = NULL){
@@ -115,7 +116,11 @@ imagePCA <- function(imgList, res = NULL, tree = NULL, groups = NULL, plot.eigen
   rasDF = stats::na.exclude(rasDF)
   rw.val = rownames(rasDF)
   df = t(rasDF)
-  comp <- stats::prcomp(df, scale. = scale)
+  if (!is.null(tree)){
+    comp <- as.prcomp(phyl.pca(tree, df, method = phy.method, mode = ifelse(scale, "corr", "cov")))
+  } else {
+    comp <- stats::prcomp(df, scale. = scale)
+  }
   pcdata <- comp$x
   rotation <- comp$rotation
   summ <- summary(comp)
