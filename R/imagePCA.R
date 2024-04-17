@@ -4,7 +4,7 @@
 #'
 #' @param imgList list of images. Can be raster images or RGB images
 #' @param res number of rows to transform the images. If NULL, res will be extracted from imgList (If not all images  have the same resolution, first will be taken). Default NULL.
-#' @param tree Optional, if class 'phylo' tree is to be integrated in the output.
+#' @param tree Optional, if class 'phylo' tree is to be integrated in the output. If tree is provided it will be used in the PCA performing phylo.PCA instead of prcomp PCA.
 #' @param phy.method  Method to obtain the correlation structure in phyl.pca from phytools. It can be "BM" or "lambda".
 #' @param groups Optional. vector of length equal to number of images defining groups to compute centroids and standard deviations PCA scores.
 #' @param plot.eigen Logical
@@ -117,8 +117,10 @@ imagePCA <- function(imgList, res = NULL, tree = NULL, phy.method = "BM", groups
   rw.val = rownames(rasDF)
   df = t(rasDF)
   if (!is.null(tree)){
+    message("Performing phylogenetic PCA", " on ", ifelse(scale, "correlation matrix", "covariance matrix"), "...")
     comp <- as.prcomp(phyl.pca(tree, df, method = phy.method, mode = ifelse(scale, "corr", "cov")))
   } else {
+    message("Performing PCA", " on ", ifelse(scale, "correlation matrix", "covariance matrix"), "...")
     comp <- stats::prcomp(df, scale. = scale)
   }
   pcdata <- comp$x

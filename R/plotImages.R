@@ -39,11 +39,16 @@
 #'      type="n", xlab="", ylab="", xaxt='n', yaxt='n', bty="n")
 #' plotImages(xy[,1], xy[,2], imageList, names = letters[1:length(imageList)], pos = 2, adj = 2)
 #' }
-plotImages <- function(x, y, images, width = 0.1, height = width, interpolate = FALSE, names = NULL, cex = 1, pos = 1, adj = 1,
+plotImages <- function(x, y, images, width = 0.1, height = NULL, interpolate = FALSE,
+                       names = NULL, cex = 1, pos = 1, adj = 1,
                         cols  = c("red", "grey90", "blue")){
 
   cols = grDevices::colorRampPalette(cols)(n=100)
   stopifnot(length(x) == length(y))
+  if (is.null(height)) {
+    asp <- sapply(images, function(i) abs(diff(extent(i)[1:2])/diff(extent(i)[3:4])))
+    height <- width / asp
+  }
   if(length(images) < length(x)){
     images <- replicate(length(x), images, simplify=FALSE)
   }

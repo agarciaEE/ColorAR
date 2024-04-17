@@ -70,11 +70,15 @@ imageTransformation <- function(sampleList, landList, adjustCoords = F, transfor
   if (length(sampleList) != length(landList)) {
     stop("sampleList is not of the same length as lanArray")
   }
-  for (n in 1:length(sampleList)) {
-    if (names(sampleList)[n] != names(landList)[n]) {
-      stop("samples are not in the same order in sampleList and lanArray")
-    }
+  if (any(!names(landList) %in% names(sampleList))) {
+    stop("sampleList names do not match names in lanArray")
   }
+  landList <- landList[names(sampleList)]
+  # for (n in 1:length(sampleList)) {
+  #   if (names(sampleList)[n] != names(landList)[n]) {
+  #     stop("samples are not in the same order in sampleList and lanArray")
+  #   }
+  # }
   lanArray <- patternize::lanArray(landList, adjustCoords = adjustCoords, sampleList)
   if (is.matrix(transformRef)) {
     refShape <- transformRef
@@ -104,7 +108,7 @@ imageTransformation <- function(sampleList, landList, adjustCoords = F, transfor
       files <- gsub("\\.tif", "", list.files(dir))
       idx <- which(names(sampleList) %in% files)
       if (length(idx) > 0){
-        message(length(idx), "images already present in the directory as transformed and thus, removed from the task. Modify parameters if is not the case.")
+        message(length(idx), " images already present in the directory as transformed and thus, removed from the task. Modify parameters if is not the case.")
         sampleList <- sampleList[-idx]
         landList <- landList[-idx]
       }
@@ -159,12 +163,17 @@ imageTransformation <- function(sampleList, landList, adjustCoords = F, transfor
       message("Removing background based on landmarks reference...")
       imgTransformed <- raster::mask(imgTransformed, sp.ref)
     }
-    if (removebg.by == "color"){
+    else if (removebg.by == "color"){
       message("Removing background based on color...")
       imgTransformed <- removebg(imgTransformed, bgcol = bgcol, bg.offset = bg.offset, plot = F)
     }
-    if (transformRef == "meanshape") {
+    if (is.matrix(transformRef)) {
       imgTransformed = raster::flip(raster::flip(imgTransformed, "x"), "y")
+    }
+    else if (!is.matrix(transformRef)) {
+      if (transformRef == "meanshape") {
+        imgTransformed = raster::flip(raster::flip(imgTransformed, "x"), "y")
+      }
     }
     if (rescale){
       rRe <- raster::raster(nrow=dim(image)[1],ncol=dim(image)[2])
@@ -177,6 +186,7 @@ imageTransformation <- function(sampleList, landList, adjustCoords = F, transfor
       imgTransformed = sp::disaggregate(imgTransformed, fact = interpolate, method = "bilinear")
       imgTransformed = raster::resample(imgTransformed, rRe, method = "ngb")
     }
+    imgTransformed[imgTransformed[] < 0] = 0
     if (plot == "result") {
       if(nlayers(imgTransformed) == 3){raster::plotRGB(imgTransformed)}
       if(nlayers(imgTransformed) == 1){plot(imgTransformed)}
@@ -197,7 +207,7 @@ imageTransformation <- function(sampleList, landList, adjustCoords = F, transfor
       }
     }
     if (save) {
-      raster::writeRaster(imgTransformed, filename = file.path(dir, paste0(names(landList)[n], ".tif")))
+      raster::writeRaster(imgTransformed, filename = file.path(dir, paste0(names(landList)[n], ".tif")), overwrite = overwrite)
     }
     rasterList[[names(landList)[n]]] <- imgTransformed
     print(paste("sample", names(landList)[n], "transformation done and added to rasterList",

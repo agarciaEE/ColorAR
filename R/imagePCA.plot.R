@@ -50,9 +50,9 @@
 #' }
 imagePCA.plot <-function(imgPCA, tree = NULL, plot.tree = c("side", "integrated"), onTop = F, SD = F,
                          col.branches  = F, node.width = 0.5, node.pch = 18, tree.cex = 1, names.cex = 1,
-                         legend = NULL, pos = "bottomleft", xlim = NULL, ylim =  NULL,
+                         legend = NULL, legend.cex = 1, pos = "bottomleft", xlim = NULL, ylim =  NULL, alpha = 1,
                          colPCA = NULL, coltree = colPCA, palette = NULL, plot.names = TRUE, plot.images = TRUE,
-                         cex = 1, pch = 19, size = 0.1, cols = c("red", "white", "blue")){
+                         cex = 1, pch = 19, size = 0.1, cols = c("red", "white", "blue"), ...){
 
   if(!is.null(plot.tree)){
     if(is.null(tree) & !is.null(imgPCA$tree)) {
@@ -100,8 +100,7 @@ imagePCA.plot <-function(imgPCA, tree = NULL, plot.tree = c("side", "integrated"
       colPCA = coltree
     }
     else{
-      coltree <- rep("white", length(tree$tip.label))
-      names(coltree) <- tree$tip.label
+      coltree <- setNames(rep("white", length(tree$tip.label)), tree$tip.label)
     }
   }
   if (is.null(colPCA)){
@@ -111,6 +110,8 @@ imagePCA.plot <-function(imgPCA, tree = NULL, plot.tree = c("side", "integrated"
     colPCA <- reverse.list(colPCA)
     colPCA <- sapply(colPCA, function(i) mix.colors(unlist(i)))
   }
+  colPCA <- scales::alpha(colPCA, alpha)
+
   mat <- matrix(c(1, 1, 1, 2, 2,
                   1, 1, 1, 2, 2,
                   1, 1, 1, 3, 3), 3, 5,
@@ -131,34 +132,16 @@ imagePCA.plot <-function(imgPCA, tree = NULL, plot.tree = c("side", "integrated"
       else{
         graphics::layout(mat)
         graphics::par(mar = c(5, 5, 3, 4))
-        plotPhylomorphospace(tree, pcdata[,1:2], cols = colPCA, cex = cex, node.width = node.width,
+        plotPhylomorphospace(tree, pcdata[,1:2], cols = colPCA, cex = tree.cex, node.width = node.width,
                          col.branches = col.branches, node.pch = node.pch, xlim = xlim, ylim = ylim,
                          xlab = paste(PCx, " (", round(summ$importance[2,PCx] * 100, 1), " %)"),
-                         ylab = paste(PCy, " (", round(summ$importance[2,PCy] * 100, 1), " %)"))
+                         ylab = paste(PCy, " (", round(summ$importance[2,PCy] * 100, 1), " %)"), ...)
         if(plot.images) {
           plotImages(pcdata[,1], pcdata[,2], images, interpolate = T, width = size)
         }
         if (plot.names){
           text(pcdata[, 1], pcdata[, 2], cex = cex, pos = 1 , offset = 1,
                as.character(rownames(pcdata)))
-        }
-        if(!is.null(legend)){
-          legend(pos, legend=names(legend), bg = "transparent",
-                 fill=legend,  cex=cex*0.8, box.lty = 0)
-        }
-        graphics::par(mar = c(4, 4, 5, 4))
-        plot(NULL, xlim=c(-2,2), ylim=c(-2,2), type="n", axes = FALSE, xlab = '', ylab='')
-        shape::Arrows(0,-1, 0, 1,  code = 3, lwd =2, arr.type = "triangle")
-        shape::Arrows(-1, 0, 1, 0, code = 3, lwd =2, arr.type = "triangle")
-        plotImages(c(0,-1.5, 1.5, 0, 0), c(0,0, 0, -1.5, 1.5), mapList, cols = cols,
-                    width = c(0.4, rep(0.2,4)),  interpolate = T, names = c("", paste0("min", PCx), paste0("max", PCx)
-                                                                            , paste0("min", PCy), paste0("max", PCy)),
-                    pos = c(1, 2,  4,  1,  3))
-        if (!as.RGB){
-          graphics::par(mar = c(5, 5, 5, 5))
-          plot(NULL, xlim=c(0,1), ylim=c(0,1), type="n", axes = FALSE, xlab = '', ylab='')
-          raster::plot(mapList[[1]], zlim = c(-1,1), col= grDevices::colorRampPalette(cols)(n=100),  legend.only = TRUE, legend.width = 2, horizontal = TRUE,
-               smallplot = c(0.3, 0.9, 0.3, 0.5), legend.args = list(text="Standardized\ndifferences", side = 3, font = 2, line = 1, cex = 1))
         }
       }
     }
@@ -175,16 +158,21 @@ imagePCA.plot <-function(imgPCA, tree = NULL, plot.tree = c("side", "integrated"
                       byrow = TRUE)
       }
       graphics::layout(mat)
-      graphics::par(mar = c(3,3,3,3), oma = c(0,0,0,0))
-      plot(tree)
+      graphics::par(mar = c(0,0,0,0), oma = c(0,0,0,0))
+
+      coltree <- sapply(tree$edge[,2], function(i)
+        if (i %in% 1:(length(tree$tip.label))) {
+          coltree[tree$tip.label[i]]
+          } else { "black" })
+      plot(tree, cex = tree.cex, edge.color = coltree)
       pp<-get("last_plot.phylo",envir=ape::.PlotPhyloEnv)
-      for(i in 1:length(tree$tip.label)) boxlabel(pp$xx[i], pp$yy[i], tree$tip.label[i], bg=coltree[tree$tip.label[i]], cex = pp$cex, alpha = 0.8)
-      graphics::par(mar = c(5, 4, 3, 4))
-      plot(pcdata[,1:2], col = colPCA[rownames(pcdata)],
+      #for(i in 1:length(tree$tip.label)) boxlabel(pp$xx[i], pp$yy[i], tree$tip.label[i], bg=coltree[tree$tip.label[i]], cex = pp$cex, alpha = 0.8)
+      graphics::par(mar = c(5, 5, 2, 2))
+      suppressWarnings(plot(pcdata[,1:2], col = colPCA[rownames(pcdata)],
            pch = 1,
            cex = 0, xlim = c(xmin, xmax), ylim = c(ymin,ymax),
            xlab = paste(PCx, " (", round(summ$importance[2,PCx] * 100, 1), " %)"),
-           ylab = paste(PCy, " (", round(summ$importance[2,PCy] * 100, 1), " %)"))
+           ylab = paste(PCy, " (", round(summ$importance[2,PCy] * 100, 1), " %)"), ...))
       if (!onTop){
         if (SD){
           sapply(1:nrow(pcdata), function(i) segments(pcdata[i,1]-pcdata[i,3], pcdata[i,2], pcdata[i,1]+pcdata[i,3], pcdata[i,2], col = scales::alpha(colPCA[rownames(pcdata)[i]], 0.8) , lwd = 4))
@@ -208,33 +196,16 @@ imagePCA.plot <-function(imgPCA, tree = NULL, plot.tree = c("side", "integrated"
           points(pcdata[,1], pcdata[,2], col = colPCA[rownames(pcdata)], pch = pch, cex = cex)
         }
       }
-      if(!is.null(legend)){
-        graphics::legend(pos, legend=names(legend), bg = "transparent",
-               fill=legend,  cex=cex*0.8, box.lty = 0)
-      }
-      plot(NULL, xlim=c(-2,2), ylim=c(-2,2), type="n", axes = FALSE, xlab = '', ylab='')
-      shape::Arrows(0,-1, 0, 1,  code = 3, lwd =2, arr.type = "triangle")
-      shape::Arrows(-1, 0, 1, 0, code = 3, lwd =2, arr.type = "triangle")
-      plotImages(c(0,-1.5, 1.5, 0, 0), c(0,0, 0, -1.5, 1.5), mapList, cols = cols,
-                  width = c(0.4, rep(0.2,4)),  interpolate = T, names = c("", paste0("min", PCx), paste0("max", PCx)
-                                                                          , paste0("min", PCy), paste0("max", PCy)),
-                  pos = c(1, 2,  4,  1,  3))
-      if (!as.RGB){
-        graphics::par(mar = c(5, 5, 5, 5))
-        plot(NULL, xlim=c(0,1), ylim=c(0,1), type="n", axes = FALSE, xlab = '', ylab='')
-        raster::plot(mapList[[1]], zlim = c(-1,1), col= grDevices::colorRampPalette(cols)(n=100),  legend.only = TRUE, legend.width = 2, horizontal = TRUE,
-             smallplot = c(0.4, 0.9, 0.3, 0.5), legend.args = list(text="Standardized\ndifferences", side = 3, font = 2, line = 1, cex = 1))
-      }
     }
   }
   else{
     graphics::layout(mat)
     graphics::par(mar = c(5, 5, 3, 4))
-    plot(pcdata[,1:2], col = colPCA[rownames(pcdata)],
+    suppressWarnings(plot(pcdata[,1:2], col = colPCA[rownames(pcdata)],
          pch = pch,
          cex = cex, xlim = c(xmin, xmax), ylim = c(ymin,ymax),
          xlab = paste(PCx, " (", round(summ$importance[2,PCx] * 100, 1), " %)"),
-         ylab = paste(PCy, " (", round(summ$importance[2,PCy] * 100, 1), " %)"))
+         ylab = paste(PCy, " (", round(summ$importance[2,PCy] * 100, 1), " %)"), ...))
     if(plot.images) {
       plotImages(pcdata[,1], pcdata[,2], images, interpolate = T, width = size)
     }
@@ -242,23 +213,24 @@ imagePCA.plot <-function(imgPCA, tree = NULL, plot.tree = c("side", "integrated"
       graphics::text(pcdata[, 1], pcdata[, 2], cex = names.cex, pos = 1 , offset = 1,
            as.character(rownames(pcdata)))
     }
-    if(!is.null(legend)){
-      graphics::legend(pos, legend=names(legend), bg = "transparent",
-             fill=legend,  cex=cex*0.8, box.lty = 0)
-    }
-    plot(NULL, xlim=c(-2,2), ylim=c(-2,2), type="n", axes = FALSE, xlab = '', ylab='')
-    shape::Arrows(0,-1, 0, 1,  code = 3, lwd =2, arr.type = "triangle")
-    shape::Arrows(-1, 0, 1, 0, code = 3, lwd =2, arr.type = "triangle")
-    plotImages(c(0,-1.5, 1.5, 0, 0), c(0,0, 0, -1.5, 1.5), mapList, cols = cols,
-                width = c(0.4, rep(0.2,4)),  interpolate = T, names = c("", paste0("min", PCx), paste0("max", PCx)
-                                                                        , paste0("min", PCy), paste0("max", PCy)),
-                pos = c(1, 2,  4,  1,  3))
-    if (!as.RGB){
-      graphics::par(mar = c(5, 5, 5, 5))
-      plot(NULL, xlim=c(0,1), ylim=c(0,1), type="n", axes = FALSE, xlab = '', ylab='')
-      raster::plot(mapList[[1]], zlim = c(-1,1), col= colorRampPalette(cols)(n=100),  legend.only = TRUE, legend.width = 2, horizontal = TRUE,
-           smallplot = c(0.3, 0.9, 0.3, 0.5), legend.args = list(text="Standardized\ndifferences", side = 3, font = 2, line = 1, cex = 1))
-    }
+  }
+  if(!is.null(legend)){
+    legend(pos, legend=names(legend), bg = "transparent",
+           fill=legend, cex = legend.cex, box.lty = 0)
+  }
+  graphics::par(mar = c(5, 5, 5, 7))
+  plot(NULL, xlim=c(-2,2), ylim=c(-2,2), type="n", axes = FALSE, xlab = '', ylab='')
+  shape::Arrows(0,-1, 0, 1,  code = 3, lwd =2, arr.type = "triangle")
+  shape::Arrows(-1, 0, 1, 0, code = 3, lwd =2, arr.type = "triangle")
+  plotImages(c(0,-1.5, 1.5, 0, 0), c(0,0, 0, -1.5, 1.5), mapList, cols = cols,
+             width = c(0.4, rep(0.2,4)),  interpolate = T, names = c("", paste0("min", PCx), paste0("max", PCx)
+                                                                     , paste0("min", PCy), paste0("max", PCy)),
+             pos = c(1, 2,  4,  1,  3))
+  if (!as.RGB){
+    plot(NULL, xlim=c(0,1), ylim=c(0,1), type="n", axes = FALSE, xlab = '', ylab='')
+    raster::plot(mapList[[1]], zlim = c(-1,1), col= grDevices::colorRampPalette(cols)(n=100),  legend.only = TRUE, legend.width = 2, horizontal = TRUE,
+                 smallplot = c(0.5, 0.9, 0.3, 0.5), legend.args = list(text="Standardized\ndifferences", side = 3, font = 2, line = 1, cex = 1))
   }
   graphics::par(mfrow = c(1,1))
 }
+
