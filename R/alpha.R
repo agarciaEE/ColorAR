@@ -1,3 +1,14 @@
+#' Alpha
+#'
+#' @param col vector of colors
+#' @param alpha alpha degree from 0 to 1
+#'
+#' @return vector
+#' @export
+#'
+#' @examples
+#' library(ColorAR)
+#' alpha("red", 0.5)
 alpha <- function(col, alpha=1){
   if(missing(col))
     stop("Please provide a vector of colours.")

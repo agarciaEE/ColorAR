@@ -1,9 +1,24 @@
-vectorize.images <- function(imgList, res = NULL, tree = NULL, groups = NULL, plot.UMAP = TRUE, plot.tree = "integrated",
-                      node.width = 0.5, col.branches = FALSE, node.pch = 18, size = 0.1, fill.NAs = FALSE, config = umap::umap.defaults,
-                      Dx = 1, Dy = 2, plot.names = T, plot.images = TRUE, interpolate = NULL,  cex = 1, type = c("RGB", "decimal", "raster"), as.RGB = FALSE,
-                      scale = FALSE, cols = c("red", "grey90", "blue"), colUMAP = NULL, coltree = colUMAP, palette = NULL){
-  
-  
+#' Vectorize images to data frame
+#'
+#' @param imgList List of images
+#' @param res resolution desired (nrows). Default is NULL/
+#' @param fill.NAs logical. Whether to fill NAs with mean values to avoid loss of data.
+#' @param type whether images are "RGB", "decimal" or "raster" images
+#'
+#' @return data.frame
+#' @export
+#' @importFrom stats na.exclude
+#' @importFrom raster nrow ncol nlayers extent raster resample as.data.frame stack mean crs ncell
+#'
+#' @examples
+#' library(ColorAR)
+#' data(imgTransList)
+#' imgdf <-  vectorize.images(imgTransList)
+#'
+vectorize.images <- function(imgList, res = NULL, fill.NAs = FALSE,
+                       type = c("RGB", "decimal", "raster")){
+
+
   out = list()
   type = type[1]
   if(raster::nlayers(imgList[[1]]) != 3 & type %in% c("RGB", "decimal")){
@@ -71,7 +86,7 @@ vectorize.images <- function(imgList, res = NULL, tree = NULL, groups = NULL, pl
   rasDF = stats::na.exclude(rasDF)
   rw.val = rownames(rasDF)
   df = t(rasDF)
-  
+
   return(df)
 }
 
