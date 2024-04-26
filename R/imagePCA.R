@@ -32,7 +32,7 @@
 #' @return The output from \code{\link{imagePCA}}
 #' @export
 #' @importFrom stats na.exclude
-#' @importFrom raster nrow ncol extent raster resample as.data.frame stack mean crs ncell
+#' @importFrom raster nrow ncol nlayers extent raster resample as.data.frame stack mean crs ncell
 #' @importFrom sp disaggregate
 #' @importFrom graphics barplot
 #'

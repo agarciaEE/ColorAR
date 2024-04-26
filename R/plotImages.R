@@ -41,7 +41,7 @@
 #' }
 plotImages <- function(x, y, images, width = 0.1, height = NULL, interpolate = FALSE,
                        names = NULL, cex = 1, pos = 1, adj = 1,
-                        cols  = c("red", "grey90", "blue")){
+                        cols  = c("red", "grey90", "blue"), ...){
 
   cols = grDevices::colorRampPalette(cols)(n=100)
   stopifnot(length(x) == length(y))
@@ -81,13 +81,13 @@ plotImages <- function(x, y, images, width = 0.1, height = NULL, interpolate = F
       graphics::rasterImage(images[[ii]], xleft=x[ii] - 0.5*width[ii],
                   ybottom= y[ii] - 0.5*height[ii],
                   xright=x[ii] + 0.5*width[ii],
-                  ytop= y[ii] + 0.5*height[ii], interpolate=interpolate)
+                  ytop= y[ii] + 0.5*height[ii], interpolate=interpolate, ...)
     }
     if (class(images[[ii]]) == "RasterLayer") {
       e = as.vector( raster::extent(images[[ii]]))
       ratio = (e[2]-e[1])/(e[4]-e[3])
       raster::extent(images[[ii]]) =  c(x[ii] - 0.5*width[ii], x[ii] + 0.5*width[ii], y[ii] - 0.5*height[ii]*ratio, y[ii] + 0.5*height[ii]*ratio)
-      raster::image(images[[ii]], interpolate=interpolate, add = T, legend = F, col = cols)
+      raster::image(images[[ii]], interpolate=interpolate, add = T, legend = F, col = cols, ...)
     }
     if(!is.null(names)){
       graphics::text(x[ii], y[ii] - 0.5*height[ii], names[ii], pos = pos, adj = adj)
