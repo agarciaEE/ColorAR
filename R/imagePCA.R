@@ -35,6 +35,7 @@
 #' @importFrom raster nrow ncol nlayers extent raster resample as.data.frame stack mean crs ncell
 #' @importFrom sp disaggregate
 #' @importFrom graphics barplot
+#' @importFrom phytools as.prcomp phyl.pca
 #'
 #' @examples
 #' library(ColorAR)
@@ -118,7 +119,7 @@ imagePCA <- function(imgList, res = NULL, tree = NULL, phy.method = "BM", groups
   df = t(rasDF)
   if (!is.null(tree)){
     message("Performing phylogenetic PCA", " on ", ifelse(scale, "correlation matrix", "covariance matrix"), "...")
-    comp <- as.prcomp(phyl.pca(tree, df, method = phy.method, mode = ifelse(scale, "corr", "cov")))
+    comp <- phytools::as.prcomp(phytools::phyl.pca(tree, df, method = phy.method, mode = ifelse(scale, "corr", "cov")))
   } else {
     message("Performing PCA", " on ", ifelse(scale, "correlation matrix", "covariance matrix"), "...")
     comp <- stats::prcomp(df, scale. = scale)
@@ -139,13 +140,13 @@ imagePCA <- function(imgList, res = NULL, tree = NULL, phy.method = "BM", groups
   PCxmax <- max(pcdata[, PCx])
   PCymin <- min(pcdata[, PCy])
   PCymax <- max(pcdata[, PCy])
-  pc.vecMix <- rep(0, dim(pcdata)[1])
+  pc.vecMix <- rep(0, dim(pcdata)[2])
   pc.vecMix[PCx] <- PCxmin
-  pc.vecMax <- rep(0, dim(pcdata)[1])
+  pc.vecMax <- rep(0, dim(pcdata)[2])
   pc.vecMax[PCx] <- PCxmax
-  pc.vecMiy <- rep(0, dim(pcdata)[1])
+  pc.vecMiy <- rep(0, dim(pcdata)[2])
   pc.vecMiy[PCy] <- PCymin
-  pc.vecMay <- rep(0, dim(pcdata)[1])
+  pc.vecMay <- rep(0, dim(pcdata)[2])
   pc.vecMay[PCy] <- PCymax
   if(type == "RGB"){
     n <- length(comp$center)/3

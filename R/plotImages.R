@@ -41,13 +41,16 @@
 #' }
 plotImages <- function(x, y, images, width = 0.1, height = NULL, interpolate = FALSE,
                        names = NULL, cex = 1, pos = 1, adj = 1,
-                        cols  = c("red", "grey90", "blue"), ...){
+                       cols  = c("red", "grey90", "blue"), angle = NULL, flip = TRUE, ...){
 
   cols = grDevices::colorRampPalette(cols)(n=100)
   stopifnot(length(x) == length(y))
-  if (is.null(height)) {
-    asp <- sapply(images, function(i) abs(diff(extent(i)[1:2])/diff(extent(i)[3:4])))
-    height <- width / asp
+  if (!is.null(angle)) {
+    if(length(angle) < length(images)){
+      angle <- rep(angle[1], length(images))
+    }
+  } else {
+    angle <- rep(0, length(images))
   }
   if(length(images) < length(x)){
     images <- replicate(length(x), images, simplify=FALSE)
@@ -65,9 +68,20 @@ plotImages <- function(x, y, images, width = 0.1, height = NULL, interpolate = F
     height <- rep(height, length(images))
   }
   width = width+width*diff(range(x))
-  height = height+height*diff(range(y))
+  if (is.null(height)) {
+    asp <- sapply(images, function(i) abs(diff(raster::extent(i)[1:2])/diff(raster::extent(i)[3:4])))
+    height <- width / asp
+  }
   for (ii in seq_along(x)){
-    if (class(images[[ii]]) %in% c("RasterStack", "RasterBrick") && dim(images[[ii]])[3] == 3) {
+    if (flip){
+      if (angle[ii] > 90 | angle[ii] < -90 ){
+        images[[ii]] <- raster::flip(images[[ii]], "y")
+      }
+    }
+    if (class(images[[ii]]) %in% c("RasterStack", "RasterBrick") && dim(images[[ii]])[3] == 4) {
+      images[[ii]] = as.array(raster::stack(sapply(1:4, function(i) images[[ii]][[i]]/255)))
+    }
+    else if (class(images[[ii]]) %in% c("RasterStack", "RasterBrick") && dim(images[[ii]])[3] == 3) {
       images[[ii]] = sapply(1:3, function(i) images[[ii]][[i]]/255)
       images[[ii]] = as.array(raster::stack(append(images[[ii]], images[[ii]][[1]])))
       images[[ii]][,,4][!is.na(images[[ii]][,,4])] = 1
@@ -79,9 +93,9 @@ plotImages <- function(x, y, images, width = 0.1, height = NULL, interpolate = F
     }
     if (is.array(images[[ii]]) && dim(images[[ii]])[3] == 4){
       graphics::rasterImage(images[[ii]], xleft=x[ii] - 0.5*width[ii],
-                  ybottom= y[ii] - 0.5*height[ii],
-                  xright=x[ii] + 0.5*width[ii],
-                  ytop= y[ii] + 0.5*height[ii], interpolate=interpolate, ...)
+                            ybottom= y[ii] - 0.5*height[ii],
+                            xright=x[ii] + 0.5*width[ii],
+                            ytop= y[ii] + 0.5*height[ii], interpolate=interpolate, angle = angle[[ii]], ...)
     }
     if (class(images[[ii]]) == "RasterLayer") {
       e = as.vector( raster::extent(images[[ii]]))
@@ -90,7 +104,7 @@ plotImages <- function(x, y, images, width = 0.1, height = NULL, interpolate = F
       raster::image(images[[ii]], interpolate=interpolate, add = T, legend = F, col = cols, ...)
     }
     if(!is.null(names)){
-      graphics::text(x[ii], y[ii] - 0.5*height[ii], names[ii], pos = pos, adj = adj)
+      graphics::text(x[ii], y[ii] - 0.5*height[ii], names[ii], pos = pos, adj = adj, ...)
     }
   }
 }

@@ -11,7 +11,6 @@
 #' @return List of raster images
 #' @export
 #' @import patternize
-#' @examples
 makeList <- function (IDlist, type, prepath = NULL, extension = NULL, format = "imageJ",
           tpsFile = NULL, skipLandmark = NULL)
 {
